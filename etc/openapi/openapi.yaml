@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: education-book-scala-app API
+  version: 0.0.1
+  description: |
+    API 契約（テンプレート）。エンドポイントを増やすたびにパス/スキーマを追記します。
+    XMIT ではこの仕様からフロントの型/クライアント (openapi-typescript / openapi-fetch) を生成します。
+servers:
+  - url: http://localhost:9000
+paths:
+  /ping:
+    get:
+      operationId: ping
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema: { type: string, example: ok }
+
+  /user/api/signup:
+    post:
+      operationId: signup
+      summary: ユーザー登録（email + password）。成功時に session Cookie を付与
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email:    { type: string }
+                password: { type: string, minLength: 8 }
+                name:     { type: string }
+      responses:
+        '201': { description: 作成。session Cookie を付与 }
+        '400': { description: 入力不正 }
+        '409': { description: email が既に登録済み }
+
+  /user/api/login:
+    post:
+      operationId: login
+      summary: ログイン。成功時に session Cookie を付与
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: OK。session Cookie を付与 }
+        '401': { description: email / password が不正 }
+
+  /user/api/logout:
+    post:
+      operationId: logout
+      summary: ログアウト（セッション削除 + Cookie 破棄）
+      responses:
+        '204': { description: No Content }
+
+  /user/api/me:
+    get:
+      operationId: me
+      summary: セッション Cookie からログイン中ユーザーを返す
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:    { type: integer }
+                  uuid:  { type: string }
+                  name:  { type: string }
+                  email: { type: string }
+        '401': { description: 未ログイン / セッション無効 }
