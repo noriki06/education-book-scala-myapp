@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { ping, getMe, signup, login, logout, type Me } from '$lib/api/client';
+  import { ping } from '$lib/system';
+  import { fetchMe, signup, login, logout, type User } from '$lib/user';
 
   let health = $state('...');
-  let me = $state<Me | null>(null);
+  let me = $state<User | null>(null);
   let error = $state('');
 
   let email = $state('');
@@ -11,38 +12,34 @@
   let name = $state('');
 
   async function refresh() {
-    me = await getMe();
+    me = await fetchMe();
   }
 
   async function onSignup(event: SubmitEvent) {
     event.preventDefault();
     error = '';
-    try {
-      await signup({ email, password, name });
-      await refresh();
-    } catch (e) {
-      error = String(e);
-    }
+    const result = await signup(email, password, name);
+    if (!result.ok) return (error = result.error);
+    await refresh();
   }
 
   async function onLogin(event: SubmitEvent) {
     event.preventDefault();
     error = '';
-    try {
-      await login({ email, password });
-      await refresh();
-    } catch (e) {
-      error = String(e);
-    }
+    const result = await login(email, password);
+    if (!result.ok) return (error = result.error);
+    await refresh();
   }
 
   async function onLogout() {
-    await logout();
+    error = '';
+    const result = await logout();
+    if (!result.ok) return (error = result.error);
     await refresh();
   }
 
   onMount(async () => {
-    health = await ping().catch(() => 'NG');
+    health = await ping();
     await refresh();
   });
 </script>
