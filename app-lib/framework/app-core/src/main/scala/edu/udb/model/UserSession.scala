@@ -21,16 +21,17 @@ import ixias.core.model.value.Token
  */
 import UserSession.*
 case class UserSession(
-  id:        Option[Id],                       // Management ID
-  uid:       User.Id,                          // User ID
-  token:     Token,                            // Opaque session token (unsigned form)
-  state:     Status        = Status.IS_ACTIVE, // Status
-  expiresAt: LocalDateTime = Now.plusDays(30), // Expiry
-  updatedAt: LocalDateTime = Now,              // Data update date
-  createdAt: LocalDateTime = Now               // Data creation date
+  id:        Option[Id],                        // 管理 ID
+  uid:       User.Id,                           // ユーザー ID
+  token:     Token,                             // セッショントークン（未署名）
+  state:     Status        = Status.IS_ACTIVE,  // セッション状態
+  expiresAt: LocalDateTime = Now.plusDays(30),  // 有効期限
+  updatedAt: LocalDateTime = Now,               // データ更新日
+  createdAt: LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
 object UserSession:
+
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, UserSession]

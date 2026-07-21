@@ -12,23 +12,25 @@ import ixias.core.security.PBKDF2
 
 /**
  * UserPassword: a user's credential, kept separate from the [[User]] profile.
- *
  * `hash` is a self-contained PBKDF2 hash string (salt + iterations + digest)
  * produced by `ixias.core.security.PBKDF2`. The raw password is never stored.
  */
 import UserPassword.*
 case class UserPassword(
-  id:        Option[Id],          // Management ID
-  uid:       User.Id,             // User ID (one credential per user)
-  hash:      String,              // PBKDF2 hash string
-  updatedAt: LocalDateTime = Now, // Data update date
-  createdAt: LocalDateTime = Now  // Data creation date
+  id:        Option[Id],           // 管理 ID
+  uid:       User.Id,              // ユーザーID
+  hash:      String,               // PBKDF2ハッシュ文字列
+  updatedAt: LocalDateTime = Now,  // データ更新日
+  createdAt: LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]:
 
-  /** Verify a raw password against the stored PBKDF2 hash. */
+  /**
+   * Verify a raw password against the stored PBKDF2 hash.
+   */
   def verify(raw: String): Boolean = PBKDF2.compare(raw, hash)
 
 object UserPassword:
+
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, UserPassword]
@@ -37,6 +39,12 @@ object UserPassword:
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]
 
-  /** Build a new credential record, hashing the raw password with PBKDF2. */
+  /**
+   * Build a new credential record, hashing the raw password with PBKDF2.
+   */
   def hashed(uid: User.Id, raw: String): WithNoId =
-    UserPassword(id = None, uid = uid, hash = PBKDF2.hash(raw)).toWithNoId
+    UserPassword(
+      id   = None,
+      uid  = uid,
+      hash = PBKDF2.hash(raw)
+    ).toWithNoId

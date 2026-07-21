@@ -15,7 +15,9 @@ import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 import edu.udb.model.{ User, UserSession }
 
-/** Table Definition: UserSession (`udb_user_session`) */
+/**
+ * Table Definition: UserSession (`udb_user_session`)
+ */
 @Singleton
 class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
   extends SlickTable[UserSession.Id, UserSession, JdbcProfile](ctx):
@@ -31,20 +33,22 @@ class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
   case class Table(tag: Tag) extends BasicTable(tag, "udb_user_session"):
     import UserSession.*
 
-    /* @1 */ def id        = column[Id]            ("id",         O.UInt64, O.PrimaryKey, O.AutoInc)
-    /* @2 */ def uid       = column[User.Id]       ("uid",        O.UInt64)
-    /* @3 */ def token     = column[Token]         ("token",      O.Varchar(255, Charset.Ascii))
-    /* @4 */ def state     = column[Status]        ("state",      O.Int16)
-    /* @5 */ def expiresAt = column[LocalDateTime] ("expires_at", O.Timestamp)
-    /* @6 */ def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
-    /* @7 */ def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
+    @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def uid       = column[User.Id]       ("uid",        O.UInt64)
+    @col def token     = column[Token]         ("token",      O.Varchar(255, Charset.Ascii))
+    @col def state     = column[Status]        ("state",      O.Int16)
+    @col def expiresAt = column[LocalDateTime] ("expires_at", O.Timestamp)
+    @col def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
+    @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
 
     def ukey01 = index("ukey01", token, unique = true)
     def key01  = index("key01", uid)
 
-    def * = (
-      id.?, uid, token, state, expiresAt, updatedAt, createdAt
-    ) <> (
-      UserSession.apply.tupled,
-      Tuple.fromProductTyped[UserSession].andThen(t => t.copy(_6 = Now))
+    /**
+     * The bidirectional mappings.
+     * 1) Tuple(table) => Model
+     * 2) Model        => Tuple(table)
+     */
+    def * = deriveColumns.mapTo[UserSession](
+      onWrite = _.copy(updatedAt = Now)
     )

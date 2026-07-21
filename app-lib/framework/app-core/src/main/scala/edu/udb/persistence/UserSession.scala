@@ -22,19 +22,21 @@ class UserSessionRepository @Inject()(
   table: UserSessionTable,
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
-  // `given` (not the usual `api.*`): `token` is an ixias `Token`, so the query
-  // needs SlickTypeMapping's `mctToken` JdbcType, and Scala 3 wildcards do not
-  // import givens.
-  import api.given
+  import api.*
 
-  /** Resolve a session by its cookie token (the raw, unsigned form). */
+  /**
+   * Resolve a session by its cookie token (the raw, unsigned form).
+   */
   def findByToken(token: Token): Future[Option[EntityEmbeddedId]] =
     RunDBAction: slick =>
       slick
         .filter(_.token === token)
-        .result.headOption
+        .result
+        .headOption
 
-  /** Delete a session by its cookie token (logout). Returns the rows removed. */
+  /**
+   * Delete a session by its cookie token (logout). Returns the rows removed.
+   */
   def deleteByToken(token: Token): Future[Int] =
     RunDBAction: slick =>
       slick
