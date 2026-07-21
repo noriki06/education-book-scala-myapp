@@ -44,8 +44,8 @@ val commonSettings = Seq(
 )
 
 // app-core: domain model + ixias persistence (EntityModel / SlickTable / Repository).
-// Mirrors XMIT's `framework/xmit-core` layout. Add sibling libraries here as the
-// domain grows (framework/app-xxx) and aggregate them below.
+// Add sibling libraries here as the domain grows (framework/app-xxx) and
+// aggregate them below.
 lazy val appCore = (project in file("framework/app-core"))
   .settings(name := "app-core")
   .settings(commonSettings*)

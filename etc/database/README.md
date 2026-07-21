@@ -7,13 +7,15 @@ etc/database/migration/<db>/common/V<日付>_<連番>__<説明>.sql
 ```
 
 - 本テンプレートの DB 名は `app`（`etc/database/migration/app/common/`）。
-- 命名は XMIT に準拠：`V20260717_01__create_xxx.sql`。
+- 命名規則：`V<日付>_<連番>__<説明>.sql`（例 `V20260717_01__create_xxx.sql`）。
 - 適用は `app-api` 側の sbt タスク：
 
 ```bash
-$ cd app-api && sbt migrateAll                # 全 DB へ適用
-$ cd app-api && sbt migrateApp/flywayMigrate  # app DB のみ
-$ cd app-api && sbt migrateApp/flywayInfo     # 適用状況の確認
+$ cd app-api
+$ sbt
+sbt:education-book-app-api> migrateAll                # 全 DB へ適用
+sbt:education-book-app-api> migrateApp/flywayMigrate  # app DB のみ
+sbt:education-book-app-api> migrateApp/flywayInfo     # 適用状況の確認
 ```
 
 flyway-sbt は 1 プロジェクト = 1 接続しか持てないため、`app-api/build.sbt` では
