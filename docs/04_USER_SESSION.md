@@ -30,9 +30,10 @@ logout ─▶ session Cookie ─▶ UserSession 削除 ─▶ Cookie 破棄
 | model | `app-lib/.../edu/udb/model/{User,UserPassword,UserSession}.scala` |
 | 永続化 | `app-lib/.../edu/udb/persistence/**`（table / repository / package） |
 | パスワード | `UserPassword`（`hashed` / `verify`）が `ixias.core.security.PBKDF2` を利用 |
-| Cookie | `app-api/app/mvc/auth/AuthCookies.scala` |
+| 認証 | `app-api/app/mvc/auth/AuthProfile.scala`（ixias `AuthProfile` / `TokenManagerViaCookie`） |
+| Cookie 設定 | `app-api/conf/application.conf` の `cookie.session.*` |
 | リクエスト | `app-api/app/model/udb/reads/{Signup,Login}.scala`（circe） |
-| コントローラ | `app-api/app/controllers/auth/{Signup,Login,Logout,Me}Controller.scala` |
+| コントローラ | `app-api/app/controllers/auth/{Signup,Login,Logout,GetMyProfile}.scala`（クラス名は `XxxController`） |
 | ルート | `app-api/conf/routes`（`/user/api/*` を直接定義） |
 | スキーマ | `etc/database/migration/app/common/V20260717_01__create_user.sql` |
 
@@ -40,7 +41,7 @@ logout ─▶ session Cookie ─▶ UserSession 削除 ─▶ Cookie 破棄
 
 ```bash
 $ docker compose up -d                       # MySQL
-$ (cd app-api && sbt flywayMigrate)          # udb_user / udb_user_session を作成
+$ (cd app-api && sbt migrateAll)          # udb_user / udb_user_session を作成
 $ (cd app-lib && sbt publishLocal)
 $ (cd app-api && sbt run)                    # :9000
 $ (cd app && pnpm install && pnpm dev)       # :3000
@@ -64,7 +65,13 @@ $ curl -c cj.txt -X POST http://localhost:9000/user/api/login \
 
 ## 注意（最小実装ゆえの割り切り）
 
-- Cookie は **署名なし**（プレーン）。session トークンはランダム UUID を DB 突合で検証します。
-  本番では署名付き Cookie ＋ `secure = true`（HTTPS）にしてください（`AuthCookies` にコメントあり）。
-- パスワードの複雑さ要件は「8 文字以上」のみ、セッションの回転・失効処理は未実装。
+- Cookie は ixias の `TokenManagerViaCookie` による **HMAC 署名付き**。値は
+  `{署名}-{nonce}-{トークン}` で、DB (`udb_user_session.token`) には未署名の
+  `Token` のみを保存します。改竄された Cookie は DB を引く前に 401 になります。
+  本番では `cookie.session.secure = true`（HTTPS）にしてください。
+- 署名鍵は `mvc.AppModule` の `MacSigner.fromSecretKey("secret-hash", "HmacSHA256")`
+  にベタ書き。本番では設定/シークレットストアから読むこと。
+- パスワードの複雑さ要件は「8 文字以上」のみ、セッションの回転は未実装。
+  `UserSession.expiresAt` / `state` も **参照されていません**（`findByToken` は
+  token 一致のみ）。期限切れ判定を入れるなら `UserSessionRepository` を拡張します。
 - レート制限・メール確認・パスワード再設定などは含みません（最小のため）。

@@ -53,7 +53,7 @@ $ pnpm dev
 1. `docker compose up -d` で MySQL を起動（初回に `app` DB/ユーザーを自動作成）
 2. ドメインを `app-lib` に実装（[app-lib/README.md](../app-lib/README.md)）→ `sbt publishLocal`
 3. マイグレーション SQL を `etc/database/migration/app/common/` に追加
-4. 適用：`cd app-api && sbt flywayMigrate`
+4. 適用：`cd app-api && sbt migrateAll`
 5. `app-api` にコントローラー / ルートを追加して再起動
 
 ---
@@ -64,5 +64,5 @@ $ pnpm dev
 |---|---|
 | `sbt` で ixias が見つからない | AWS 認証情報を設定（[02_SETUP.md](02_SETUP.md) の 5） |
 | `app-api` の起動で `education-book-app-lib` が見つからない | 先に `app-lib` で `sbt publishLocal` を実行したか確認 |
-| `flywayMigrate` で DB 接続エラー | `docker compose ps` で MySQL 起動を確認、ポート 13306 が空いているか |
+| `migrateAll` で DB 接続エラー | `docker compose ps` で MySQL 起動を確認、ポート 13306 が空いているか |
 | フロントから API が 404 | `app-api`（:9000）を先に起動、`app/web/vite.config.ts` の proxy を確認 |

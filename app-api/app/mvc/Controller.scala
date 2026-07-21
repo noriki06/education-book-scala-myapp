@@ -23,19 +23,21 @@ type BaseControllerComponents = ixias.web.play.BaseControllerComponents
  *
  * @param base  ixias/Play base controller components
  * @param repos aggregated repositories ([[AppRepositoryFacade]])
+ * @param auth  cookie session authentication ([[mvc.auth.AuthProfile]])
  */
 case class AppControllerComponents @Inject()(
   base:  BaseControllerComponents,
   repos: AppRepositoryFacade,
+  auth:  mvc.auth.AuthProfile,
 )
 
 /**
  * Abstract base controller. All application controllers extend this to inherit
  * ixias's `BaseController` helpers (`request.decode[T]`, JSON responses, i18n)
- * and convenient access to `repos`.
+ * and convenient access to `repos` / `auth`.
  */
 abstract class BaseAbstractController @Inject()(
   protected val app: AppControllerComponents
 ) extends ixias.web.play.BaseAbstractController(app.base):
-
   protected lazy val repos = app.repos
+  protected lazy val auth  = app.auth

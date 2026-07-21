@@ -62,7 +62,7 @@ $ cd app && corepack enable && pnpm install && pnpm dev   # http://localhost:300
 
 ```bash
 $ docker compose up -d                       # MySQL
-$ (cd app-api && sbt flywayMigrate)          # udb_user / udb_user_session を作成
+$ (cd app-api && sbt migrateAll)          # udb_user / udb_user_session を作成
 ```
 
 詳細は [docs/04_USER_SESSION.md](docs/04_USER_SESSION.md)。

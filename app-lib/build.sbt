@@ -14,12 +14,10 @@ val ixiasVersion = if (release) "3.1.3" else "3.1.3-SNAPSHOT"
 
 val commonSettings = Seq(
   organization := "net.ixias",
-  scalaVersion := "3.6.4",
+  scalaVersion := "3.9.0-RC1",
   resolvers ++= Seq(
     "Typesafe Releases" at "https://repo.typesafe.com/typesafe/ivy-releases/",
     "Sonatype Release"  at "https://oss.sonatype.org/content/repositories/releases/",
-    // ixias-v3 is distributed from a private S3 Maven repository.
-    // Resolving it requires AWS credentials (see docs/02_SETUP.md).
     "IxiaS Releases"    at "https://s3-ap-northeast-1.amazonaws.com/maven.ixias.net/releases",
     "IxiaS Snapshots"   at "https://s3-ap-northeast-1.amazonaws.com/maven.ixias.net/snapshots"
   ),
@@ -38,6 +36,11 @@ val commonSettings = Seq(
   ),
   Test / fork := true,
   Compile / run / fork := true,
+  // Skip the javadoc jar on publishLocal. Scaladoc re-processes ixias' inherited
+  // doc comments and warns on every `[[...]]` link it cannot resolve (types living
+  // in the ixias binary dependency, Java/3rd-party types). The artifact has no
+  // value for an internally published library.
+  Compile / packageDoc / publishArtifact := false,
 )
 
 // app-core: domain model + ixias persistence (EntityModel / SlickTable / Repository).

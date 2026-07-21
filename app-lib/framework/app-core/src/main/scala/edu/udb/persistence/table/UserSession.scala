@@ -10,6 +10,7 @@ package edu.udb.persistence.table
 import javax.inject.*
 import slick.jdbc.JdbcProfile
 import ixias.core.model.*
+import ixias.core.model.value.Token
 import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 import edu.udb.model.{ User, UserSession }
@@ -18,7 +19,7 @@ import edu.udb.model.{ User, UserSession }
 @Singleton
 class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
   extends SlickTable[UserSession.Id, UserSession, JdbcProfile](ctx):
-  import api.*
+  import api.{ given, * }
 
   val ds = Map(
     HostSpec.PRIMARY -> DataSourceFactory("ixias.db.mysql://primary/app"),
@@ -32,7 +33,7 @@ class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
 
     /* @1 */ def id        = column[Id]            ("id",         O.UInt64, O.PrimaryKey, O.AutoInc)
     /* @2 */ def uid       = column[User.Id]       ("uid",        O.UInt64)
-    /* @3 */ def token     = column[String]        ("token",      O.Varchar(255, Charset.Ascii))
+    /* @3 */ def token     = column[Token]         ("token",      O.Varchar(255, Charset.Ascii))
     /* @4 */ def state     = column[Status]        ("state",      O.Int16)
     /* @5 */ def expiresAt = column[LocalDateTime] ("expires_at", O.Timestamp)
     /* @6 */ def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
