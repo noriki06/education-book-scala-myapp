@@ -14,7 +14,9 @@ import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 import edu.udb.model.User
 
-/** Table Definition: User (`udb_user`) */
+/**
+ * Table Definition: User (`udb_user`)
+ */
 @Singleton
 class UserTable @Inject()(ctx: SlickDatabaseContext)
   extends SlickTable[User.Id, User, JdbcProfile](ctx):
@@ -30,20 +32,22 @@ class UserTable @Inject()(ctx: SlickDatabaseContext)
   case class Table(tag: Tag) extends BasicTable(tag, "udb_user"):
     import User.*
 
-    /* @1 */ def id        = column[Id]            ("id",         O.UInt64, O.PrimaryKey, O.AutoInc)
-    /* @2 */ def uuid      = column[UUID]          ("uuid",       O.Varchar(64, Charset.Ascii))
-    /* @3 */ def email     = column[String]        ("email",      O.Varchar(255, Charset.Ascii))
-    /* @4 */ def name      = column[String]        ("name",       O.Varchar(255))
-    /* @5 */ def state     = column[Status]        ("state",      O.Int16)
-    /* @6 */ def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
-    /* @7 */ def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
+    @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def uuid      = column[UUID]          ("uuid",       O.Varchar(64, Charset.Ascii))
+    @col def email     = column[String]        ("email",      O.Varchar(255, Charset.Ascii))
+    @col def name      = column[String]        ("name",       O.Varchar(255))
+    @col def state     = column[Status]        ("state",      O.Int16)
+    @col def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
+    @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
 
     def ukey01 = index("ukey01", uuid,  unique = true)
     def ukey02 = index("ukey02", email, unique = true)
 
-    def * = (
-      id.?, uuid, email, name, state, updatedAt, createdAt
-    ) <> (
-      User.apply.tupled,
-      Tuple.fromProductTyped[User].andThen(t => t.copy(_6 = Now))
+    /**
+     * The bidirectional mappings.
+     * 1) Tuple(table) => Model
+     * 2) Model        => Tuple(table)
+     */
+    def * = deriveColumns.mapTo[User](
+      onWrite = _.copy(updatedAt = Now)
     )

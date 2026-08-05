@@ -11,22 +11,20 @@ import ixias.core.model.*
 
 /**
  * User: a registered account (profile only).
- *
- * Credentials are kept separately in [[UserPassword]], and login sessions in
- * [[UserSession]].
  */
 import User.*
 case class User(
-  id:        Option[Id],                 // User ID (None before persisted)
-  uuid:      UUID,                        // Public UUID
-  email:     String,                     // Login ID (unique)
-  name:      String,                     // Display name
-  state:     Status        = Status.IS_ACTIVE,
-  updatedAt: LocalDateTime = Now,        // Data update date
-  createdAt: LocalDateTime = Now         // Data creation date
+  id:        Option[Id],                        // 管理 ID（永続化前は None）
+  uuid:      UUID,                              // 公開用 UUID
+  email:     String,                            // ログイン ID（一意）
+  name:      String,                            // 表示名
+  state:     Status        = Status.IS_ACTIVE,  // アカウント状態
+  updatedAt: LocalDateTime = Now,               // データ更新日
+  createdAt: LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
 object User:
+
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
   type UUID       = UUID.Repr

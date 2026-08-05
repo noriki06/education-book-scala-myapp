@@ -7,13 +7,23 @@
 
 package mvc
 
-import com.google.inject.{ AbstractModule, Provides }
-import javax.inject.Singleton
+import javax.inject.{ Inject, Singleton }
+import com.google.inject.AbstractModule
 import scala.concurrent.ExecutionContext
 import slick.jdbc.JdbcProfile
 
+import ixias.core.security.{ Signer, MacSigner }
 import ixias.db.slick.SlickDatabaseContext
 import ixias.db.slick.driver.JdbcMySQLProfileExt
+
+/**
+ * Concrete SlickDatabaseContext with constructor injection.
+ */
+@Singleton
+class AppDatabaseContext @Inject()(
+  val driver: JdbcProfile,
+  val ec:     ExecutionContext,
+) extends SlickDatabaseContext
 
 /**
  * Guice module providing the infrastructure bindings ixias needs
@@ -23,17 +33,10 @@ import ixias.db.slick.driver.JdbcMySQLProfileExt
  */
 class AppModule extends AbstractModule:
 
-  override def configure(): Unit = ()
-
-  @Provides @Singleton
-  def provideJdbcProfile: JdbcProfile =
-    new JdbcMySQLProfileExt {}
-
-  @Provides @Singleton
-  def provideSlickDatabaseContext(
-    jdbcProfile:      JdbcProfile,
-    executionContext: ExecutionContext
-  ): SlickDatabaseContext =
-    new SlickDatabaseContext:
-      val driver: JdbcProfile      = jdbcProfile
-      val ec:     ExecutionContext = executionContext
+  override def configure(): Unit =
+    bind(classOf[JdbcProfile])
+      .toInstance(new JdbcMySQLProfileExt{})
+    bind(classOf[SlickDatabaseContext])
+      .to(classOf[AppDatabaseContext])
+    bind(classOf[Signer])
+      .toInstance(MacSigner.fromSecretKey("secret-hash", "HmacSHA256"))

@@ -15,12 +15,10 @@ import cats.data.EitherT
 import cats.implicits.*
 import ixias.core.util.Log.*
 import play.api.libs.json.Json
-import play.api.mvc.Results.*
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
-import mvc.auth.AuthCookies
 import model.udb.reads.JsValueSignup
-import edu.udb.model.{ User, UserPassword, UserSession }
+import edu.udb.model.{ User, UserPassword }
 
 /**
  * User registration.  POST /user/api/signup  { email, password, name }
@@ -61,15 +59,9 @@ class SignupController @Inject()(
           email = email,
           name  = name,
         ).toWithNoId)
-        _     <- repos.udb.userPassword.add(UserPassword.hashed(uid, password))
-        token <- newSession(uid)
+        _      <- repos.udb.userPassword.add(UserPassword.hashed(uid, password))
+        result <- auth.open(uid)(Created(Json.obj("id" -> uid.value)))
       yield
         info(s"[AUTH] signup complete uid=${uid.value}")
-        AuthCookies.putSession(token)(Created(Json.obj("id" -> uid.value)))
+        result
     }
-
-  private def newSession(uid: User.Id): Future[String] =
-    val token = java.util.UUID.randomUUID.toString
-    repos.udb.userSession
-      .add(UserSession(id = None, uid = uid, token = token).toWithNoId)
-      .map(_ => token)

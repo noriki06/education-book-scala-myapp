@@ -14,7 +14,9 @@ import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 import edu.udb.model.{ User, UserPassword }
 
-/** Table Definition: UserPassword (`udb_user_password`) */
+/**
+ * Table Definition: UserPassword (`udb_user_password`)
+ */
 @Singleton
 class UserPasswordTable @Inject()(ctx: SlickDatabaseContext)
   extends SlickTable[UserPassword.Id, UserPassword, JdbcProfile](ctx):
@@ -30,17 +32,19 @@ class UserPasswordTable @Inject()(ctx: SlickDatabaseContext)
   case class Table(tag: Tag) extends BasicTable(tag, "udb_user_password"):
     import UserPassword.*
 
-    /* @1 */ def id        = column[Id]            ("id",         O.UInt64, O.PrimaryKey, O.AutoInc)
-    /* @2 */ def uid       = column[User.Id]       ("uid",        O.UInt64)
-    /* @3 */ def hash      = column[String]        ("hash",       O.Varchar(255, Charset.Ascii))
-    /* @4 */ def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
-    /* @5 */ def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
+    @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def uid       = column[User.Id]       ("uid",        O.UInt64)
+    @col def hash      = column[String]        ("hash",       O.Varchar(255, Charset.Ascii))
+    @col def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
+    @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
 
     def ukey01 = index("ukey01", uid, unique = true)
 
-    def * = (
-      id.?, uid, hash, updatedAt, createdAt
-    ) <> (
-      UserPassword.apply.tupled,
-      Tuple.fromProductTyped[UserPassword].andThen(t => t.copy(_4 = Now))
+    /**
+     * The bidirectional mappings.
+     * 1) Tuple(table) => Model
+     * 2) Model        => Tuple(table)
+     */
+    def * = deriveColumns.mapTo[UserPassword](
+      onWrite = _.copy(updatedAt = Now)
     )

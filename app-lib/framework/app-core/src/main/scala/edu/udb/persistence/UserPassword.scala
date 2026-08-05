@@ -25,7 +25,9 @@ class UserPasswordRepository @Inject()(
 ) extends SlickBaseRepository(table, ctx):
   import api.*
 
-  /** Resolve a user's credential by user id (used at login). */
+  /**
+   * Resolve a user's credential by user id (used at login).
+   */
   def findByUserId(uid: User.Id): Future[Option[EntityEmbeddedId]] =
     RunDBAction(HostSpec.REPLICA): slick =>
       slick

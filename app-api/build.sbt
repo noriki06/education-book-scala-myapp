@@ -5,14 +5,19 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
+import play.sbt.routes.RoutesKeys
+import com.typesafe.config.ConfigFactory
+
 organization := "net.ixias"
 name         := "education-book-app-api"
-scalaVersion := "3.6.4"
+
+// ThisBuild scope so the flyway migration sub-projects inherit it too —
+// otherwise they fall back to sbt's own Scala 2.12.
+ThisBuild / scalaVersion := "3.9.0-RC1"
 
 resolvers ++= Seq(
   "Typesafe Releases" at "https://repo.typesafe.com/typesafe/ivy-releases/",
   "Sonatype Release"  at "https://oss.sonatype.org/content/repositories/releases/",
-  // ixias-v3 (pulled transitively via app-lib) lives in a private S3 Maven repo.
   "IxiaS Releases"    at "https://s3-ap-northeast-1.amazonaws.com/maven.ixias.net/releases",
   "IxiaS Snapshots"   at "https://s3-ap-northeast-1.amazonaws.com/maven.ixias.net/snapshots"
 )
@@ -31,15 +36,15 @@ libraryDependencies ++= Seq(
   guice
 )
 
+// FlywayPlugin is enabled per-database on the migration sub-projects below,
+// not here — the root project has no single database to point it at.
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala)
-  .enablePlugins(FlywayPlugin)
 
 // Play generates an injected router; controllers are @Inject-constructed.
 routesGenerator := InjectedRoutesGenerator
 
 // Custom PathBindable/QueryStringBindable (ixias) available in routes files.
-import play.sbt.routes.RoutesKeys
 RoutesKeys.routesImport := Seq(
   "mvc.Binders.{ *, given }"
 )
@@ -59,15 +64,38 @@ javaOptions ++= Seq(
 )
 Compile / run / fork := true
 
-// --[ Flyway migration ]-----------------------------------
-// Schema migrations live in etc/database (filesystem locations). There are none
-// in the skeleton — add *.sql files there, then apply them with:  sbt flywayMigrate
-// Connection settings are read from conf/application.conf (db.app).
-import com.typesafe.config.ConfigFactory
+//- Setting flyway
+// flyway-sbt exposes exactly one connection per project, so each database gets
+// its own throwaway sub-project under `target/migration/<db>` carrying that
+// database's settings. `migrateAll` then just sequences their `flywayMigrate`
+// tasks. Adding a database is two lines: a `migrateXxx` project below and a
+// `db.xxx` block in conf/application.conf.
+//
+//   sbt migrateAll             # every database
+//   sbt migrateApp/flywayMigrate   # just one, plus flywayInfo / flywayClean / …
 lazy val applicationConf = ConfigFactory.parseFile(new File("conf/application.conf")).resolve()
-flywayDriver    := applicationConf.getString("db.app.driver")
-flywayUrl       := applicationConf.getString("db.app.url")
-flywayUser      := applicationConf.getString("db.app.username")
-flywayPassword  := applicationConf.getString("db.app.password")
-flywayLocations := Seq("filesystem:" + (baseDirectory.value / ".." / "etc" / "database" / "migration" / "app" / "common").getPath)
-flywayTable     := "_flyway_schema"
+lazy val migrationSettings = (dbName: String) => Def.settings(
+  flywayDriver    := applicationConf.getString(s"db.$dbName.driver"),
+  flywayUrl       := applicationConf.getString(s"db.$dbName.url"),
+  flywayUser      := applicationConf.getString(s"db.$dbName.username"),
+  flywayPassword  := applicationConf.getString(s"db.$dbName.password"),
+  flywayTable     := applicationConf.getString(s"db.$dbName.migration.table"),
+  // SQL may legitimately contain `${...}`; don't let Flyway treat it as a placeholder.
+  flywayPlaceholderReplacement := false,
+  // Paths are relative to the sbt working directory (app-api), not to the
+  // sub-project's baseDirectory under target/.
+  flywayLocations := {
+    val locations = applicationConf.getStringList(s"db.$dbName.migration.locations")
+    locations.toArray(Array[String]()).toSeq.map(s"filesystem:../etc/database/migration/$dbName/" + _)
+  }
+)
+
+lazy val migrateAll = taskKey[Unit]("Migrate all databases.")
+lazy val migrateApp = (project in file("target/migration/app"))
+  .enablePlugins(FlywayPlugin)
+  .settings(migrationSettings("app"))
+migrateAll := Def
+  .sequential(
+    migrateApp / flywayMigrate,
+  )
+  .value

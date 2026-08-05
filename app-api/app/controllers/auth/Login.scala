@@ -15,12 +15,9 @@ import cats.data.EitherT
 import cats.implicits.*
 import ixias.core.util.Log.*
 import play.api.libs.json.Json
-import play.api.mvc.Results.*
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
-import mvc.auth.AuthCookies
 import model.udb.reads.JsValueLogin
-import edu.udb.model.{ User, UserSession }
 
 /**
  * User login.  POST /user/api/login  { email, password }
@@ -51,14 +48,8 @@ class LoginController @Inject()(
     }
     // Step-3: Issue a session and set the cookie.
     .semiflatMap { user =>
-      newSession(user.id).map { token =>
+      auth.open(user.id)(Ok(Json.obj("id" -> user.id.value))).map { result =>
         info(s"[AUTH] login uid=${user.id.value}")
-        AuthCookies.putSession(token)(Ok(Json.obj("id" -> user.id.value)))
+        result
       }
     }
-
-  private def newSession(uid: User.Id): Future[String] =
-    val token = java.util.UUID.randomUUID.toString
-    repos.udb.userSession
-      .add(UserSession(id = None, uid = uid, token = token).toWithNoId)
-      .map(_ => token)

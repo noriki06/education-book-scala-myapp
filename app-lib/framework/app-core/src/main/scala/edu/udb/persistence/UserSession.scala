@@ -9,6 +9,7 @@ package edu.udb.persistence
 
 import javax.inject.*
 import scala.concurrent.Future
+import ixias.core.model.value.Token
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 
 import edu.udb.persistence.table.UserSessionTable
@@ -23,15 +24,20 @@ class UserSessionRepository @Inject()(
 ) extends SlickBaseRepository(table, ctx):
   import api.*
 
-  /** Resolve a session by its cookie token. */
-  def findByToken(token: String): Future[Option[EntityEmbeddedId]] =
+  /**
+   * Resolve a session by its cookie token (the raw, unsigned form).
+   */
+  def findByToken(token: Token): Future[Option[EntityEmbeddedId]] =
     RunDBAction: slick =>
       slick
         .filter(_.token === token)
-        .result.headOption
+        .result
+        .headOption
 
-  /** Delete a session by its cookie token (logout). Returns the rows removed. */
-  def deleteByToken(token: String): Future[Int] =
+  /**
+   * Delete a session by its cookie token (logout). Returns the rows removed.
+   */
+  def deleteByToken(token: Token): Future[Int] =
     RunDBAction: slick =>
       slick
         .filter(_.token === token)

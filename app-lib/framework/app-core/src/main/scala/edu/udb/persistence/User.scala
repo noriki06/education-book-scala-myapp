@@ -16,7 +16,6 @@ import edu.udb.persistence.table.UserTable
 
 /**
  * Repository for User persistence.
- * Inherits `find` / `add` / `update` / `remove` from `SlickBaseRepository`.
  */
 @Singleton
 class UserRepository @Inject()(
@@ -25,7 +24,9 @@ class UserRepository @Inject()(
 ) extends SlickBaseRepository(table, ctx):
   import api.*
 
-  /** Resolve a user by login email (used by signup/login). */
+  /**
+   * Resolve a user by login email (used by signup/login).
+   */
   def findByEmail(email: String): Future[Option[EntityEmbeddedId]] =
     RunDBAction(HostSpec.REPLICA): slick =>
       slick

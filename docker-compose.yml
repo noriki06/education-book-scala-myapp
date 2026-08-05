@@ -2,7 +2,7 @@
 # Copyright IxiaS, Inc. All Rights Reserved.
 #
 # Local development infrastructure. Minimal: MySQL only.
-# (XMIT additionally runs an nginx reverse proxy for TLS / subdomain routing.)
+# (Production additionally runs an nginx reverse proxy for TLS / subdomain routing.)
 #
 
 services:
