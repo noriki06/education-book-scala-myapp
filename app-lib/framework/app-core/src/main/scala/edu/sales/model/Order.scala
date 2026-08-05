@@ -42,7 +42,20 @@ case class Order(
 ) extends EntityModel[Id]:
 
   /** Cancellable only until the kitchen starts — food already made cannot be un-made. */
-  def isCancelable: Boolean = state == Status.IS_ACCEPTED
+  def isCancelable: Boolean = state.canMoveTo(Status.IS_CANCELED)
+
+  /**
+   * Move to `next`, or explain why the flow does not allow it.
+   *
+   * Returning an Either rather than throwing keeps the rule usable from the
+   * controller's EitherT flow: an illegal transition is a 409, not a 500.
+   */
+  def moveTo(next: Status): Either[String, Order] =
+    Either.cond(
+      state.canMoveTo(next),
+      copy(state = next),
+      s"An order cannot move from $state to $next"
+    )
 
 object Order:
 
@@ -67,3 +80,16 @@ object Order:
     case IS_COOKING  extends Status(code =  2) // 調理中
     case IS_READY    extends Status(code =  3) // 受取準備完了
     case IS_HANDED   extends Status(code =  4) // 受渡し完了
+
+    /**
+     * The transition table, in one place.
+     *
+     * Cancelling is only allowed before the kitchen starts — once cooking has
+     * begun the food exists and someone has to pay for it.
+     */
+    def canMoveTo(next: Status): Boolean = (this, next) match
+      case (IS_ACCEPTED, IS_COOKING)  => true
+      case (IS_ACCEPTED, IS_CANCELED) => true
+      case (IS_COOKING,  IS_READY)    => true
+      case (IS_READY,    IS_HANDED)   => true
+      case _                          => false
