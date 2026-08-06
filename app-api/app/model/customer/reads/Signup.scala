@@ -5,16 +5,17 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package model.udb.reads
+package model.customer.reads
 
 import io.circe.Decoder
 import io.circe.generic.semiauto.*
 
-/** Request body for user login. */
-case class JsValueLogin(
+/** Request body for user signup. */
+case class JsValueSignup(
   email:    String,
   password: String,
+  name:     String,
 )
 
-object JsValueLogin:
-  given Decoder[JsValueLogin] = deriveDecoder
+object JsValueSignup:
+  given Decoder[JsValueSignup] = deriveDecoder

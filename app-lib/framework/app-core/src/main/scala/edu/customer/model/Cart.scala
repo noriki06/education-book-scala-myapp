@@ -5,11 +5,10 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.sales.model
+package edu.customer.model
 
 import ixias.core.model.*
 
-import edu.udb.model.User
 import edu.shop.model.Shop
 
 /**

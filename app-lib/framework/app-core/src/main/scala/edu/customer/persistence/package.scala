@@ -5,11 +5,11 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.udb
+package edu.customer
 
 import javax.inject.*
 import ixias.core.inject.IxiasModule
-import edu.udb.persistence.table.*
+import edu.customer.persistence.table.*
 
 package object persistence:
 

@@ -5,14 +5,14 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.udb.persistence
+package edu.customer.persistence
 
 import javax.inject.*
 import scala.concurrent.Future
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 
-import edu.udb.persistence.table.UserTable
+import edu.customer.persistence.table.UserTable
 
 /**
  * Repository for User persistence.

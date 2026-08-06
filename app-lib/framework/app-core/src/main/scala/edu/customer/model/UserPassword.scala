@@ -5,7 +5,7 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.udb.model
+package edu.customer.model
 
 import ixias.core.model.*
 import ixias.core.security.PBKDF2

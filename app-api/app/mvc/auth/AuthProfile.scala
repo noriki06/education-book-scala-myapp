@@ -19,7 +19,7 @@ import ixias.web.play.session.TokenManagerViaCookie
 import ixias.web.play.session.AuthProfile as IxiasAuthProfile
 
 import mvc.AppRepositoryFacade
-import edu.udb.model.{ User, UserSession }
+import edu.customer.model.{ User, UserSession }
 
 /**
  * Session authentication for the email/password login flow.
@@ -68,10 +68,10 @@ class AuthProfile @Inject()(
     tokenManager.extract(request) match
       case Left(rejected) => Future.successful(Left(rejected))
       case Right(token)   =>
-        repos.udb.userSession.findByToken(token).flatMap {
+        repos.customer.userSession.findByToken(token).flatMap {
           case None          => Future.successful(Left(Unauthorized("The session is no longer valid")))
           case Some(session) =>
-            repos.udb.user.find(session.v.uid).map {
+            repos.customer.user.find(session.v.uid).map {
               case None       => Left(Unauthorized("The session owner no longer exists"))
               case Some(user) => Right(user)
             }
@@ -83,7 +83,7 @@ class AuthProfile @Inject()(
    */
   def open(uid: User.Id)(result: Result)(using ExecutionContext): Future[Result] =
     val token = Token.generate
-    repos.udb.userSession
+    repos.customer.userSession
       .add(UserSession(id = None, uid = uid, token = token).toWithNoId)
       .map(_ => tokenManager.put(token)(result))
 
@@ -94,6 +94,6 @@ class AuthProfile @Inject()(
    */
   def close(request: RequestHeader)(result: Result)(using ExecutionContext): Future[Result] =
     val revoked = tokenManager.extract(request) match
-      case Right(token) => repos.udb.userSession.deleteByToken(token).map(_ => ())
+      case Right(token) => repos.customer.userSession.deleteByToken(token).map(_ => ())
       case Left(_)      => Future.unit
     revoked.map(_ => tokenManager.discard(result))
