@@ -12,15 +12,15 @@ import scala.concurrent.Future
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 
-import edu.customer.model.User
-import edu.customer.persistence.table.UserPasswordTable
+import edu.customer.model.Customer
+import edu.customer.persistence.table.CustomerPasswordTable
 
 /**
- * Repository for UserPassword persistence (credentials).
+ * Repository for CustomerPassword persistence (credentials).
  */
 @Singleton
-class UserPasswordRepository @Inject()(
-  table: UserPasswordTable,
+class CustomerPasswordRepository @Inject()(
+  table: CustomerPasswordTable,
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
   import api.*
@@ -28,8 +28,8 @@ class UserPasswordRepository @Inject()(
   /**
    * Resolve a user's credential by user id (used at login).
    */
-  def findByUserId(uid: User.Id): Future[Option[EntityEmbeddedId]] =
+  def findByUserId(customerId: Customer.Id): Future[Option[EntityEmbeddedId]] =
     RunDBAction(HostSpec.REPLICA): slick =>
       slick
-        .filter(_.uid === uid)
+        .filter(_.customerId === customerId)
         .result.headOption

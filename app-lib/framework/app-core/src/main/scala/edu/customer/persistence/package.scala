@@ -13,21 +13,21 @@ import edu.customer.persistence.table.*
 
 package object persistence:
 
-  /** Guice module wiring the User persistence singletons. */
+  /** Guice module wiring the Customer persistence singletons. */
   class Module extends IxiasModule:
     def bindings(): Unit =
-      singleton[UserTable]
-      singleton[UserPasswordTable]
-      singleton[UserSessionTable]
-      singleton[UserRepository]
-      singleton[UserPasswordRepository]
-      singleton[UserSessionRepository]
+      singleton[CustomerTable]
+      singleton[CustomerPasswordTable]
+      singleton[CustomerSessionTable]
+      singleton[CustomerRepository]
+      singleton[CustomerPasswordRepository]
+      singleton[CustomerSessionRepository]
       singleton[RepositoryFacade]
 
-  /** Aggregated repositories for the User domain (injected by app-api). */
+  /** Aggregated repositories for the Customer domain (injected by app-api). */
   @Singleton
   class RepositoryFacade @Inject()(
-    val user:         UserRepository,
-    val userPassword: UserPasswordRepository,
-    val userSession:  UserSessionRepository,
+    val customer:         CustomerRepository,
+    val customerPassword: CustomerPasswordRepository,
+    val customerSession:  CustomerSessionRepository,
   )

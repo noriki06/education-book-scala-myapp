@@ -12,14 +12,14 @@ import scala.concurrent.Future
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 
-import edu.customer.persistence.table.UserTable
+import edu.customer.persistence.table.CustomerTable
 
 /**
- * Repository for User persistence.
+ * Repository for Customer persistence.
  */
 @Singleton
-class UserRepository @Inject()(
-  table: UserTable,
+class CustomerRepository @Inject()(
+  table: CustomerTable,
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
   import api.*

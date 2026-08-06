@@ -13,14 +13,14 @@ import ixias.core.model.*
 import ixias.core.model.value.Token
 import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
-import edu.customer.model.{ User, UserSession }
+import edu.customer.model.{ Customer, CustomerSession }
 
 /**
- * Table Definition: UserSession (`udb_user_session`)
+ * Table Definition: CustomerSession (`udb_user_session`)
  */
 @Singleton
-class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
-  extends SlickTable[UserSession.Id, UserSession, JdbcProfile](ctx):
+class CustomerSessionTable @Inject()(ctx: SlickDatabaseContext)
+  extends SlickTable[CustomerSession.Id, CustomerSession, JdbcProfile](ctx):
   import api.{ given, * }
 
   val ds = Map(
@@ -31,10 +31,10 @@ class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
   val query = TableQuery[Table]
 
   case class Table(tag: Tag) extends BasicTable(tag, "udb_user_session"):
-    import UserSession.*
+    import CustomerSession.*
 
     @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
-    @col def uid       = column[User.Id]       ("uid",        O.UInt64)
+    @col def customerId       = column[Customer.Id]       ("customerId",        O.UInt64)
     @col def token     = column[Token]         ("token",      O.Varchar(255, Charset.Ascii))
     @col def state     = column[Status]        ("state",      O.Int16)
     @col def expiresAt = column[LocalDateTime] ("expires_at", O.Timestamp)
@@ -42,13 +42,13 @@ class UserSessionTable @Inject()(ctx: SlickDatabaseContext)
     @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
 
     def ukey01 = index("ukey01", token, unique = true)
-    def key01  = index("key01", uid)
+    def key01  = index("key01", customerId)
 
     /**
      * The bidirectional mappings.
      * 1) Tuple(table) => Model
      * 2) Model        => Tuple(table)
      */
-    def * = deriveColumns.mapTo[UserSession](
+    def * = deriveColumns.mapTo[CustomerSession](
       onWrite = _.copy(updatedAt = Now)
     )

@@ -10,10 +10,10 @@ package edu.customer.model
 import ixias.core.model.*
 
 /**
- * User: a registered account (profile only).
+ * Customer: a registered account (profile only).
  */
-import User.*
-case class User(
+import Customer.*
+case class Customer(
   id:        Option[Id],                        // 管理 ID（永続化前は None）
   uuid:      UUID,                              // 公開用 UUID
   email:     String,                            // ログイン ID（一意）
@@ -23,13 +23,13 @@ case class User(
   createdAt: LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
-object User:
+object Customer:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
   type UUID       = UUID.Repr
-  type WithNoId   = Entity.WithNoId[Id, User]
-  type EmbeddedId = Entity.EmbeddedId[Id, User]
+  type WithNoId   = Entity.WithNoId[Id, Customer]
+  type EmbeddedId = Entity.EmbeddedId[Id, Customer]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]

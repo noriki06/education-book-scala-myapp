@@ -10,22 +10,30 @@ package edu.shop.model
 import ixias.core.model.*
 
 import edu.common.model.Product
-import edu.customer.model.User
+import edu.customer.model.Customer
 
 /**
- * OrderItem: one line of a confirmed order.
+ * OrderItem: one line of a confirmed order — what was asked for, not what it
+ * cost.
  *
- * This line currently holds only a reference to the product. It carries no
- * copy of the name or the price it was charged at, so displaying a past order
- * means reading today's [[edu.common.model.Product]] — and a price revision
- * silently rewrites what past orders appear to have cost.
+ * The line keeps a reference and a count, nothing else. Money is not recorded
+ * per line because it does not need to be: [[Payment]] freezes the subtotal,
+ * the tax and the billed total at settlement, so a later price revision cannot
+ * move what the customer was charged.
+ *
+ * What that costs is the per-line breakdown. A receipt reprinted next year can
+ * still show the correct total, but the amount beside each line has to be read
+ * from today's [[Product]], and after a revision those amounts will no longer
+ * add up to the total. Recording `productName` and `unitPrice` here is what
+ * makes a line reproducible; it is deliberately not done while the total is
+ * the only figure the business asks to reproduce.
  */
 import OrderItem.*
 case class OrderItem(
   id:         Option[Id],          // 管理Id
   shopId:     Shop.Id,             // 店舗Id
   orderId:    Order.Id,            // オーダーId
-  uid:        User.Id,             // 顧客Id
+  customerId: Customer.Id,         // 顧客Id
   productId:  Product.Id,          // 商品Id
   productNum: Int,                 // 注文数
   updatedAt:  LocalDateTime = Now, // データ更新日

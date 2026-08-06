@@ -18,13 +18,13 @@ import play.api.libs.json.Json
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
 import model.customer.reads.JsValueSignup
-import edu.customer.model.{ User, UserPassword }
+import edu.customer.model.{ Customer, CustomerPassword }
 
 /**
- * User registration.  POST /user/api/signup  { email, password, name }
+ * Customer registration.  POST /user/api/signup  { email, password, name }
  *
- * Validates input, ensures the email is unused, stores the profile ([[User]])
- * and its credential ([[UserPassword]], PBKDF2-hashed) separately, issues a
+ * Validates input, ensures the email is unused, stores the profile ([[Customer]])
+ * and its credential ([[CustomerPassword]], PBKDF2-hashed) separately, issues a
  * login session, and sets the session cookie.
  */
 class SignupController @Inject()(
@@ -45,7 +45,7 @@ class SignupController @Inject()(
       else Right((email, body.password, name))
     // Step-3: Reject a duplicate email.
     .flatMapF { case (email, password, name) =>
-      repos.customer.user.findByEmail(email).map {
+      repos.customer.customer.findByEmail(email).map {
         case Some(_) => Left(Conflict("email already registered"))
         case None    => Right((email, password, name))
       }
@@ -53,15 +53,15 @@ class SignupController @Inject()(
     // Step-4: Create the user + credential + session, set the cookie.
     .semiflatMap { case (email, password, name) =>
       for
-        uid <- repos.customer.user.add(User(
+        customerId <- repos.customer.customer.add(Customer(
           id    = None,
-          uuid  = User.UUID.generate,
+          uuid  = Customer.UUID.generate,
           email = email,
           name  = name,
         ).toWithNoId)
-        _      <- repos.customer.userPassword.add(UserPassword.hashed(uid, password))
-        result <- auth.open(uid)(Created(Json.obj("id" -> uid.value)))
+        _      <- repos.customer.customerPassword.add(CustomerPassword.hashed(customerId, password))
+        result <- auth.open(customerId)(Created(Json.obj("id" -> customerId.value)))
       yield
-        info(s"[AUTH] signup complete uid=${uid.value}")
+        info(s"[AUTH] signup complete customerId=${customerId.value}")
         result
     }

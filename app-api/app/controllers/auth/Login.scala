@@ -20,10 +20,10 @@ import mvc.{ AppControllerComponents, BaseAbstractController }
 import model.customer.reads.JsValueLogin
 
 /**
- * User login.  POST /user/api/login  { email, password }
+ * Customer login.  POST /user/api/login  { email, password }
  *
  * Looks up the user by email, verifies the password against the stored
- * PBKDF2 hash ([[edu.customer.model.UserPassword]]), issues a login session,
+ * PBKDF2 hash ([[edu.customer.model.CustomerPassword]]), issues a login session,
  * and sets the session cookie.
  */
 class LoginController @Inject()(
@@ -36,11 +36,11 @@ class LoginController @Inject()(
       request.decode[JsValueLogin]
     // Step-2: Look up the user and verify the password.
     .flatMapF { body =>
-      repos.customer.user.findByEmail(body.email.trim.toLowerCase).flatMap {
+      repos.customer.customer.findByEmail(body.email.trim.toLowerCase).flatMap {
         case None =>
           Future.successful(Left(Unauthorized("invalid email or password")))
         case Some(user) =>
-          repos.customer.userPassword.findByUserId(user.id).map {
+          repos.customer.customerPassword.findByUserId(user.id).map {
             case Some(pw) if pw.v.verify(body.password) => Right(user)
             case _ => Left(Unauthorized("invalid email or password"))
           }
@@ -49,7 +49,7 @@ class LoginController @Inject()(
     // Step-3: Issue a session and set the cookie.
     .semiflatMap { user =>
       auth.open(user.id)(Ok(Json.obj("id" -> user.id.value))).map { result =>
-        info(s"[AUTH] login uid=${user.id.value}")
+        info(s"[AUTH] login customerId=${user.id.value}")
         result
       }
     }

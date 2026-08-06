@@ -19,7 +19,7 @@ import ixias.web.play.session.TokenManagerViaCookie
 import ixias.web.play.session.AuthProfile as IxiasAuthProfile
 
 import mvc.AppRepositoryFacade
-import edu.customer.model.{ User, UserSession }
+import edu.customer.model.{ Customer, CustomerSession }
 
 /**
  * Session authentication for the email/password login flow.
@@ -33,7 +33,7 @@ import edu.customer.model.{ User, UserSession }
  *
  * The three controllers use it like this:
  * {{{
- *   SignupController / LoginController  auth.open(uid)(result)      // 発行 + Cookie 付与
+ *   SignupController / LoginController  auth.open(customerId)(result)      // 発行 + Cookie 付与
  *   GetMyProfileController              auth.resolveUser(request)   // 検証 + ユーザー解決
  *   LogoutController                    auth.close(request)(result) // 失効 + Cookie 破棄
  * }}}
@@ -49,7 +49,7 @@ import edu.customer.model.{ User, UserSession }
 class AuthProfile @Inject()(
   repos:  AppRepositoryFacade,
   signer: Signer,
-) extends IxiasAuthProfile[User.EmbeddedId]:
+) extends IxiasAuthProfile[Customer.EmbeddedId]:
 
   private given Signer = signer
 
@@ -64,27 +64,27 @@ class AuthProfile @Inject()(
    * user behind the session no longer exists.
    */
   override def resolveUser(request: RequestHeader)
-    (using ExecutionContext): Future[Either[Result, User.EmbeddedId]] =
+    (using ExecutionContext): Future[Either[Result, Customer.EmbeddedId]] =
     tokenManager.extract(request) match
       case Left(rejected) => Future.successful(Left(rejected))
       case Right(token)   =>
-        repos.customer.userSession.findByToken(token).flatMap {
+        repos.customer.customerSession.findByToken(token).flatMap {
           case None          => Future.successful(Left(Unauthorized("The session is no longer valid")))
           case Some(session) =>
-            repos.customer.user.find(session.v.uid).map {
+            repos.customer.customer.find(session.v.customerId).map {
               case None       => Left(Unauthorized("The session owner no longer exists"))
               case Some(user) => Right(user)
             }
         }
 
   /**
-   * Opens a session for `uid`: stores a fresh token and attaches the signed
+   * Opens a session for `customerId`: stores a fresh token and attaches the signed
    * cookie to `result`. Called after signup and after a successful login.
    */
-  def open(uid: User.Id)(result: Result)(using ExecutionContext): Future[Result] =
+  def open(customerId: Customer.Id)(result: Result)(using ExecutionContext): Future[Result] =
     val token = Token.generate
-    repos.customer.userSession
-      .add(UserSession(id = None, uid = uid, token = token).toWithNoId)
+    repos.customer.customerSession
+      .add(CustomerSession(id = None, customerId = customerId, token = token).toWithNoId)
       .map(_ => tokenManager.put(token)(result))
 
   /**
@@ -94,6 +94,6 @@ class AuthProfile @Inject()(
    */
   def close(request: RequestHeader)(result: Result)(using ExecutionContext): Future[Result] =
     val revoked = tokenManager.extract(request) match
-      case Right(token) => repos.customer.userSession.deleteByToken(token).map(_ => ())
+      case Right(token) => repos.customer.customerSession.deleteByToken(token).map(_ => ())
       case Left(_)      => Future.unit
     revoked.map(_ => tokenManager.discard(result))

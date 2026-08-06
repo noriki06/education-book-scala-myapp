@@ -11,7 +11,7 @@ import ixias.core.model.*
 import ixias.core.model.value.Token
 
 /**
- * UserSession: a server-side login session.
+ * CustomerSession: a server-side login session.
  *
  * After login succeeds a random [[Token]] is issued, stored here, and handed to
  * the client in an httpOnly cookie — signed, so the cookie value is the
@@ -19,10 +19,10 @@ import ixias.core.model.value.Token
  * raw token. Subsequent requests verify the signature, recover the raw token,
  * and resolve the user by looking it up here.
  */
-import UserSession.*
-case class UserSession(
+import CustomerSession.*
+case class CustomerSession(
   id:        Option[Id],                        // 管理 ID
-  uid:       User.Id,                           // ユーザー ID
+  customerId:       Customer.Id,                           // ユーザー ID
   token:     Token,                             // セッショントークン（未署名）
   state:     Status        = Status.IS_ACTIVE,  // セッション状態
   expiresAt: LocalDateTime = Now.plusDays(30),  // 有効期限
@@ -30,12 +30,12 @@ case class UserSession(
   createdAt: LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
-object UserSession:
+object CustomerSession:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, UserSession]
-  type EmbeddedId = Entity.EmbeddedId[Id, UserSession]
+  type WithNoId   = Entity.WithNoId[Id, CustomerSession]
+  type EmbeddedId = Entity.EmbeddedId[Id, CustomerSession]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]

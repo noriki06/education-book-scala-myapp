@@ -9,7 +9,7 @@ package edu.shop.model
 
 import ixias.core.model.*
 
-import edu.customer.model.User
+import edu.customer.model.Customer
 
 /**
  * Order: a purchase that has been confirmed.
@@ -18,9 +18,9 @@ import edu.customer.model.User
  * cooking, ready, handed over. The member creates it, but every state after
  * that is a staff action on the store tablet.
  *
- * `taxRate` is stored rather than read from configuration: it is the rate the
- * customer was actually charged at. When the rate changes, past orders must
- * keep theirs.
+ * It holds no amounts. What was charged — subtotal, discount, tax, total — is
+ * [[Payment]], because those figures must survive a price or tax revision and
+ * an order does not.
  *
  * `code` is what the counter calls out and what appears in URLs. The
  * auto-increment `id` never leaves the database: a sequential number in public
@@ -29,15 +29,15 @@ import edu.customer.model.User
  */
 import Order.*
 case class Order(
-  id:        Option[Id],            // 管理 ID（永続化前は None）
-  uid:       User.Id,               // 顧客Id
-  shopId:    Shop.Id,               // 店舗Id
-  code:      Code,                  // 受付番号（公開用の識別子）
-  taxRate:   BigDecimal,            // 消費税率 (0.1000 = 10%)
-  state:     Status,                // 注文の状態
-  pickupAt:  LocalDateTime,         // 受け取り予定時刻
-  updatedAt: LocalDateTime = Now,   // データ更新日
-  createdAt: LocalDateTime = Now    // データ作成日
+  id:         Option[Id],            // 管理 ID（永続化前は None）
+  shopId:     Shop.Id,               // 店舗Id
+  customerId: Customer.Id,           // 顧客Id
+  code:       Code,                  // 受付番号（公開用の識別子）
+  state:      Status,                // 注文の状態
+  pickupAt:   LocalDateTime,         // 受取: 予定時刻
+  pickupedAt: LocalDateTime,         // 受取: 完了時刻
+  updatedAt:  LocalDateTime = Now,   // データ更新日
+  createdAt:  LocalDateTime = Now    // データ作成日
 ) extends EntityModel[Id]
 
 object Order:

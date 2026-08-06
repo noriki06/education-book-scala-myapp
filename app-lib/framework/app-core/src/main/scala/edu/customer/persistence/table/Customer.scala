@@ -12,14 +12,14 @@ import slick.jdbc.JdbcProfile
 import ixias.core.model.*
 import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
-import edu.customer.model.User
+import edu.customer.model.Customer
 
 /**
- * Table Definition: User (`udb_user`)
+ * Table Definition: Customer (`udb_user`)
  */
 @Singleton
-class UserTable @Inject()(ctx: SlickDatabaseContext)
-  extends SlickTable[User.Id, User, JdbcProfile](ctx):
+class CustomerTable @Inject()(ctx: SlickDatabaseContext)
+  extends SlickTable[Customer.Id, Customer, JdbcProfile](ctx):
   import api.*
 
   val ds = Map(
@@ -30,7 +30,7 @@ class UserTable @Inject()(ctx: SlickDatabaseContext)
   val query = TableQuery[Table]
 
   case class Table(tag: Tag) extends BasicTable(tag, "udb_user"):
-    import User.*
+    import Customer.*
 
     @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
     @col def uuid      = column[UUID]          ("uuid",       O.Varchar(64, Charset.Ascii))
@@ -48,6 +48,6 @@ class UserTable @Inject()(ctx: SlickDatabaseContext)
      * 1) Tuple(table) => Model
      * 2) Model        => Tuple(table)
      */
-    def * = deriveColumns.mapTo[User](
+    def * = deriveColumns.mapTo[Customer](
       onWrite = _.copy(updatedAt = Now)
     )
