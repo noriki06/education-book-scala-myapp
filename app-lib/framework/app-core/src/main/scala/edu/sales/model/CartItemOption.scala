@@ -9,7 +9,7 @@ package edu.sales.model
 
 import ixias.core.model.*
 
-import edu.common.menu.model.MenuOptionItem
+import edu.shop.model.MenuOptionItem
 
 /**
  * CartItemOption: one choice attached to a cart line (size L, extra patty).

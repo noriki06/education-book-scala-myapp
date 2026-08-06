@@ -9,8 +9,7 @@ package edu.sales.model
 
 import ixias.core.model.*
 
-import edu.common.menu.model.MenuOptionItem
-import edu.value.Money
+import edu.shop.model.MenuOptionItem
 
 /**
  * OrderItemOption: one choice attached to an order line.
@@ -25,7 +24,7 @@ case class OrderItemOption(
   orderItemId:      OrderItem.Id,        // どの注文明細に付くか
   menuOptionItemId: MenuOptionItem.Id,   // どの選択肢だったか（集計用）
   name:             String,              // 注文時点の表示名
-  extraPrice:       Money,               // 注文時点の追加料金（税抜）
+  extraPrice:       Int,                 // 注文時点の追加料金（円・税抜）
   updatedAt:        LocalDateTime = Now, // データ更新日
   createdAt:        LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]

@@ -5,11 +5,9 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.common.menu.model
+package edu.shop.model
 
 import ixias.core.model.*
-
-import edu.value.Money
 
 /**
  * MenuOptionItem: one choice inside a group (size M, no pickles, extra patty).
@@ -23,7 +21,7 @@ case class MenuOptionItem(
   id:         Option[Id],                        // 管理 ID（永続化前は None）
   groupId:    MenuOptionGroup.Id,                // 属するオプショングループ
   name:       String,                            // 表示名（M サイズ / ピクルス抜き）
-  extraPrice: Money,                             // 追加料金（税抜）。無料なら Money.Zero
+  extraPrice: Int,                               // 追加料金（円・税抜）。無料なら 0
   sortOrder:  Short,                             // グループ内の表示順
   state:      Status        = Status.IS_AVAILABLE, // 提供状態
   updatedAt:  LocalDateTime = Now,               // データ更新日

@@ -11,7 +11,6 @@ import ixias.core.model.*
 
 import edu.udb.model.User
 import edu.shop.model.Shop
-import edu.value.Money
 
 /**
  * Order: a purchase that has been confirmed.
@@ -33,9 +32,9 @@ case class Order(
   uid:       User.Id,                           // 注文した会員
   shopId:    Shop.Id,                           // 受け取る店舗
   pickupAt:  LocalDateTime,                     // 受け取り予定時刻
-  subtotal:  Money,                             // 税抜合計（確定時の金額）
-  tax:       Money,                             // 消費税額（確定時の金額）
-  total:     Money,                             // 税込合計（確定時の金額）
+  subtotal:  Int,                               // 税抜合計（円・確定時の金額）
+  tax:       Int,                               // 消費税額（円・確定時の金額）
+  total:     Int,                               // 税込合計（円・確定時の金額）
   state:     Status        = Status.IS_ACCEPTED, // 注文の状態
   updatedAt: LocalDateTime = Now,               // データ更新日
   createdAt: LocalDateTime = Now                // データ作成日

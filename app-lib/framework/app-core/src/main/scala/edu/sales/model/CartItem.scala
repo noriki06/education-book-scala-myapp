@@ -9,8 +9,7 @@ package edu.sales.model
 
 import ixias.core.model.*
 
-import edu.common.menu.model.MenuItem
-import edu.value.Quantity
+import edu.shop.model.MenuItem
 
 /**
  * CartItem: one line in a cart.
@@ -27,7 +26,7 @@ case class CartItem(
   id:         Option[Id],          // 管理 ID（永続化前は None）
   cartId:     Cart.Id,             // どのカートの行か
   menuItemId: MenuItem.Id,         // どの商品か（名前と価格は都度引く）
-  quantity:   Quantity,            // 数量
+  quantity:   Int,                 // 数量（1〜99）
   updatedAt:  LocalDateTime = Now, // データ更新日
   createdAt:  LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]

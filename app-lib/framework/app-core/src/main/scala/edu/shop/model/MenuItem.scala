@@ -5,11 +5,9 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.common.menu.model
+package edu.shop.model
 
 import ixias.core.model.*
-
-import edu.value.Money
 
 /**
  * MenuItem: one product on sale (a burger, a drink, a set).
@@ -28,7 +26,7 @@ case class MenuItem(
   categoryId:  MenuCategory.Id,                 // 属するカテゴリ
   name:        String,                          // 商品名
   description: String,                          // 説明文
-  price:       Money,                           // 現在の税抜価格
+  price:       Int,                             // 現在の価格（円・税抜）
   sortOrder:   Short,                           // カテゴリ内の表示順
   state:       Status        = Status.IS_ON_SALE, // 販売状態
   updatedAt:   LocalDateTime = Now,             // データ更新日

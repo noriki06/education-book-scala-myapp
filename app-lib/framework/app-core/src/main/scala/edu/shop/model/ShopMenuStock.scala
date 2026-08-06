@@ -9,8 +9,6 @@ package edu.shop.model
 
 import ixias.core.model.*
 
-import edu.common.menu.model.MenuItem
-
 /**
  * ShopMenuStock: whether one shop can serve one item right now.
  *

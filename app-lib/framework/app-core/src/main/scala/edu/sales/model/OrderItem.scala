@@ -9,8 +9,7 @@ package edu.sales.model
 
 import ixias.core.model.*
 
-import edu.common.menu.model.MenuItem
-import edu.value.{ Money, Quantity }
+import edu.shop.model.MenuItem
 
 /**
  * OrderItem: one line of a confirmed order.
@@ -29,14 +28,14 @@ case class OrderItem(
   orderId:    Order.Id,            // どの注文の行か
   menuItemId: MenuItem.Id,         // どの商品だったか（集計用。表示には使わない）
   name:       String,              // 注文時点の商品名
-  unitPrice:  Money,               // 注文時点の単価（税抜）
-  quantity:   Quantity,            // 数量
+  unitPrice:  Int,                 // 注文時点の単価（円・税抜）
+  quantity:   Int,                 // 数量（1〜99）
   updatedAt:  LocalDateTime = Now, // データ更新日
   createdAt:  LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]:
 
   /** The line amount, options excluded — derived, so it is not stored. */
-  def subtotal: Money = unitPrice * quantity.value.toInt
+  def subtotal: Int = unitPrice * quantity
 
 object OrderItem:
 

@@ -9,8 +9,6 @@ package edu.sales.model
 
 import ixias.core.model.*
 
-import edu.value.Money
-
 /**
  * Payment: the record of settling one order through an external provider.
  *
@@ -25,7 +23,7 @@ import Payment.*
 case class Payment(
   id:            Option[Id],                       // 管理 ID（永続化前は None）
   orderId:       Order.Id,                         // どの注文の支払いか
-  amount:        Money,                            // 請求金額（税込）
+  amount:        Int,                              // 請求金額（円・税込）
   transactionId: Option[String] = None,            // 決済サービスの取引 ID
   state:         Status         = Status.IS_UNPAID, // 決済の状態
   paidAt:        Option[LocalDateTime] = None,     // 決済完了日時
