@@ -10,6 +10,8 @@ package edu.shop.model
 import ixias.core.model.*
 import ixias.core.model.value.PhoneNumber
 
+import edu.common.model.SalesTemplate
+
 /**
  * Shop: a physical store an order is picked up from.
  *
@@ -25,19 +27,22 @@ import ixias.core.model.value.PhoneNumber
  */
 import Shop.*
 case class Shop(
-  id:           Option[Id],                    // 管理 ID（永続化前は None）
-  name:         String,                        // 店名（渋谷店）
-  address:      String,                        // 住所
-  phone:        PhoneNumber,                   // 電話番号（値オブジェクト）
-  openingHours: OpeningHours,                  // 営業時間
-  state:        Status        = Status.IS_OPEN, // 店舗の状態
-  updatedAt:    LocalDateTime = Now,           // データ更新日
-  createdAt:    LocalDateTime = Now            // データ作成日
-) extends EntityModel[Id]:
-
-  /** Whether an order may be placed at `time` — used before accepting one. */
-  def isOpenAt(time: LocalTime): Boolean =
-    state == Status.IS_OPEN && openingHours.includes(time)
+  id:          Option[Id],                     // 管理Id
+  name:        String,                         // 店舗名
+  templateId:  SalesTemplate.Id,               // 適用する販売テンプレートId
+  openTimeMon: Option[(LocalTime, Duration)],  // 月曜: 開店時刻, 営業時間(h)
+  openTimeTue: Option[(LocalTime, Duration)],  // 火曜: 開店時刻, 営業時間(h)
+  openTimeWed: Option[(LocalTime, Duration)],  // 水曜: 開店時刻, 営業時間(h)
+  openTimeThu: Option[(LocalTime, Duration)],  // 木曜: 開店時刻, 営業時間(h)
+  openTimeFri: Option[(LocalTime, Duration)],  // 金曜: 開店時刻, 営業時間(h)
+  openTimeSat: Option[(LocalTime, Duration)],  // 土曜: 開店時刻, 営業時間(h)
+  openTimeSun: Option[(LocalTime, Duration)],  // 日曜: 開店時刻, 営業時間(h)
+  phone:       PhoneNumber,                    // 電話番号
+  address:     String,                         // 住所
+  state:       Status        = Status.IS_OPEN, // 店舗の状態
+  updatedAt:   LocalDateTime = Now,            // データ更新日
+  createdAt:   LocalDateTime = Now             // データ作成日
+) extends EntityModel[Id]
 
 object Shop:
 
@@ -50,30 +55,8 @@ object Shop:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /**
-   * Opening hours: the time the shop opens and how long it stays open.
-   *
-   * There is no closing time. Keeping a start and an end needs an "open is
-   * before close" check, and `02:00` cannot say whether it means tonight or
-   * tomorrow morning. A length makes the pair impossible to get wrong and lets
-   * `10:00 + 16h` cross midnight unambiguously.
-   */
-  case class OpeningHours(startAt: LocalTime, duration: Duration):
-    require(
-      !duration.isNegative && !duration.isZero && duration.getSeconds <= 86400L,
-      s"Opening hours must last between 0 and 24 hours: $duration"
-    )
-
-    /** The closing time, derived — it wraps past midnight when it has to. */
-    def endAt: LocalTime = startAt.plus(duration)
-
-    /** Whether `time` falls inside the opening hours (midnight-safe). */
-    def includes(time: LocalTime): Boolean =
-      val elapsed = time.toSecondOfDay.toLong - startAt.toSecondOfDay.toLong
-      val since   = if elapsed >= 0L then elapsed else elapsed + 86400L
-      since < duration.getSeconds
-
-  /** Whether the shop is in business at all (not "closed today"). */
+  /** 店舗の状態: 数年に一度しか変わらない。「本日休業」はここではない */
   enum Status(val code: Short) extends EnumStatus[Short]:
-    case IS_CLOSED extends Status(code = -1) // 休業中（長期休業・閉店）
-    case IS_OPEN   extends Status(code =  1) // 営業中
+    case IS_CLOSED    extends Status(code = -1) // 休業中: 長期休業・閉店
+    case IS_PREPARING extends Status(code =  0) // 開店準備中: まだ注文を受けない
+    case IS_OPEN      extends Status(code =  1) // 営業中

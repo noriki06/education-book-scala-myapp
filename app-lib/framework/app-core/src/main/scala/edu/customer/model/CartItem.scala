@@ -9,7 +9,7 @@ package edu.customer.model
 
 import ixias.core.model.*
 
-import edu.shop.model.MenuItem
+import edu.common.model.Product
 
 /**
  * CartItem: one line in a cart.
@@ -23,12 +23,12 @@ import edu.shop.model.MenuItem
  */
 import CartItem.*
 case class CartItem(
-  id:         Option[Id],          // 管理 ID（永続化前は None）
-  cartId:     Cart.Id,             // どのカートの行か
-  menuItemId: MenuItem.Id,         // どの商品か（名前と価格は都度引く）
-  quantity:   Int,                 // 数量（1〜99）
-  updatedAt:  LocalDateTime = Now, // データ更新日
-  createdAt:  LocalDateTime = Now  // データ作成日
+  id:          Option[Id],          // 管理Id
+  cartId:      Cart.Id,             // カートId
+  productId:  Product.Id,         // 商品Id
+  productNum: Int,                 // 注文数
+  updatedAt:   LocalDateTime = Now, // データ更新日
+  createdAt:   LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
 object CartItem:

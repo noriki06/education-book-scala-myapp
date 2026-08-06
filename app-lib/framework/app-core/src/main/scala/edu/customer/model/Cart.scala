@@ -23,16 +23,13 @@ import edu.shop.model.Shop
  */
 import Cart.*
 case class Cart(
-  id:        Option[Id],                       // 管理 ID（永続化前は None）
-  uid:       User.Id,                          // 誰のカートか
-  shopId:    Shop.Id,                          // どの店舗で受け取るか
+  id:        Option[Id],                        // 管理Id
+  uid:       User.Id,                           // 顧客Id
+  shopId:    Shop.Id,                           // 店舗Id
   state:     Status        = Status.IS_EDITING, // カートの状態
-  updatedAt: LocalDateTime = Now,              // データ更新日
-  createdAt: LocalDateTime = Now               // データ作成日
-) extends EntityModel[Id]:
-
-  /** Whether lines may still be added or removed. */
-  def isEditable: Boolean = state == Status.IS_EDITING
+  updatedAt: LocalDateTime = Now,               // データ更新日
+  createdAt: LocalDateTime = Now                // データ作成日
+) extends EntityModel[Id]
 
 object Cart:
 
@@ -45,7 +42,10 @@ object Cart:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** Cart status. An ordered cart is kept, not deleted — it is the draft an order came from. */
+  /**
+   * Cart status. An ordered cart is kept,
+   * not deleted — it is the draft an order came from.
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_DISCARDED extends Status(code = -1) // 破棄
     case IS_EDITING   extends Status(code =  1) // 編集中
