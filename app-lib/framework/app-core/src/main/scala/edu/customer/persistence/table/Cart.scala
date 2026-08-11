@@ -17,6 +17,7 @@ import ixias.core.model.*
 import ixias.core.model.json.given
 import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
+import ixias.core.model.value.Token
 import edu.customer.model.{ Cart, Customer }
 import edu.shop.model.Shop
 
@@ -32,7 +33,7 @@ import edu.shop.model.Shop
 @Singleton
 class CartTable @Inject()(ctx: SlickDatabaseContext)
   extends SlickTable[Cart.Id, Cart, JdbcProfile](ctx):
-  import api.*
+  import api.{ given, * }
 
   val ds = Map(
     HostSpec.PRIMARY -> DataSourceFactory("ixias.db.mysql://primary/app"),
@@ -60,16 +61,18 @@ class CartTable @Inject()(ctx: SlickDatabaseContext)
   case class Table(tag: Tag) extends BasicTable(tag, "customer_cart"):
     import Cart.*
 
-    @pk  def id         = column[Id]             ("id",          O.UInt64, O.AutoInc, O.PrimaryKey)
-    @col def customerId  = column[Customer.Id]   ("customer_id", O.UInt64)
-    @col def shopId     = column[Shop.Id]        ("shop_id",     O.UInt64)
-    @col def items      = column[Seq[BuyItem]]   ("items",       O.Json)
-    @col def coupons    = column[Seq[UseCoupon]] ("coupons",     O.Json)
-    @col def state      = column[Status]         ("state",       O.Int16)
-    @col def updatedAt  = column[LocalDateTime]  ("updated_at",  O.Timestamp(onUpdate = true))
-    @col def createdAt  = column[LocalDateTime]  ("created_at",  O.Timestamp)
+    @pk  def id         = column[Id]                  ("id",          O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def token      = column[Token]               ("token",       O.Varchar(255, Charset.Ascii))
+    @col def customerId = column[Option[Customer.Id]] ("customer_id", O.UInt64)
+    @col def shopId     = column[Shop.Id]             ("shop_id",     O.UInt64)
+    @col def items      = column[Seq[BuyItem]]        ("items",       O.Json)
+    @col def coupons    = column[Seq[UseCoupon]]      ("coupons",     O.Json)
+    @col def state      = column[Status]              ("state",       O.Int16)
+    @col def updatedAt  = column[LocalDateTime]       ("updated_at",  O.Timestamp(onUpdate = true))
+    @col def createdAt  = column[LocalDateTime]       ("created_at",  O.Timestamp)
 
-    def key01 = index("key01", customerId)
+    def ukey01 = index("ukey01", token, unique = true)
+    def key01  = index("key01",  customerId)
 
     def * = deriveColumns.mapTo[Cart](
       onWrite = _.copy(updatedAt = Now)

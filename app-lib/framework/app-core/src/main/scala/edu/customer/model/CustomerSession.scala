@@ -21,13 +21,13 @@ import ixias.core.model.value.Token
  */
 import CustomerSession.*
 case class CustomerSession(
-  id:        Option[Id],                        // 管理 ID
-  customerId:       Customer.Id,                           // ユーザー ID
-  token:     Token,                             // セッショントークン（未署名）
-  state:     Status        = Status.IS_ACTIVE,  // セッション状態
-  expiresAt: LocalDateTime = Now.plusDays(30),  // 有効期限
-  updatedAt: LocalDateTime = Now,               // データ更新日
-  createdAt: LocalDateTime = Now                // データ作成日
+  id:         Option[Id],                        // 管理 ID
+  customerId: Customer.Id,                       // ユーザー ID
+  token:      Token,                             // セッショントークン（未署名）
+  state:      Status        = Status.IS_ACTIVE,  // セッション状態
+  expiresAt:  LocalDateTime = Now.plusDays(30),  // 有効期限
+  updatedAt:  LocalDateTime = Now,               // データ更新日
+  createdAt:  LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
 object CustomerSession:
