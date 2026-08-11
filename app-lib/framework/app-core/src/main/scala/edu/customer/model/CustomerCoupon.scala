@@ -9,33 +9,49 @@ package edu.customer.model
 
 import ixias.core.model.*
 
-import edu.common.model.CouponIssue
+import edu.common.model.{ Coupon, CouponIssue, StampCard }
 
 /**
  * CustomerCoupon: one coupon a member is holding.
  *
- * Only produced by an issue of type IS_GRANTED. A direct-consumption issue is
- * applied straight in the cart and leaves no row here.
+ * The `Customer` prefix is redundant with the package and kept anyway: without
+ * it this would be `Coupon`, colliding with the master it points at, and every
+ * file touching both would have to qualify one of them.
+ *
+ * `couponId` says what the coupon is. The two after it say where it came from,
+ * and **only one of them is ever set**:
+ *
+ *  - `couponIssueId` … taken from a distribution, by code or from the list.
+ *                      Only an issue of type IS_GRANTED lands here; a
+ *                      direct-consumption one is applied straight in the cart
+ *                      and leaves no row
+ *  - `stampCardId`   … exchanged for a filled [[CustomerStampCard]]
+ *
+ * A redemption has no issue behind it. An issue answers "by code or from the
+ * list, how many, until when", and for a redemption [[StampCard]] has already
+ * answered all of it — pointing at one would mean creating a row with every
+ * field empty.
  *
  * `expiredAt` is fixed at the moment of acquisition from the coupon's
  * `validDays`, not read back from the master. Reading it back would mean that
  * shortening the validity period retroactively expires coupons people are
  * already holding — the same reason an order line copies its price.
  *
- * It points at the issue rather than the coupon, so "which campaign did this
- * come from" survives, and the cap on that issue is simply the number of rows
- * pointing at it.
+ * The cap on an issue is simply the number of rows pointing at it, so a
+ * redeemed coupon never counts against a distribution.
  */
 import CustomerCoupon.*
 case class CustomerCoupon(
-  id:            Option[Id],             // 保有Id
-  customerId:    Customer.Id,            // 顧客Id
-  couponIssueId: CouponIssue.Id,         // どの配布から取得したか
-  expiredAt:     Option[LocalDateTime],  // 有効期限。取得時に確定。None は無期限
-  state:         Status,                 // 保有状態
-  usedAt:        Option[LocalDateTime],  // 使用日時。IS_USED で埋まる
-  updatedAt:     LocalDateTime = Now,    // データ更新日
-  createdAt:     LocalDateTime = Now     // データ作成日
+  id:            Option[Id],              // 保有Id
+  customerId:    Customer.Id,             // 顧客Id
+  couponId:      Coupon.Id,               // クーポンId
+  couponIssueId: Option[CouponIssue.Id],  // 配布Id（配布から取得したとき）
+  stampCardId:   Option[StampCard.Id],    // 台帳Id（スタンプ引換のとき）
+  expiredAt:     Option[LocalDateTime],   // 有効期限。取得時に確定。None は無期限
+  state:         Status,                  // 保有状態
+  usedAt:        Option[LocalDateTime],   // 使用日時。IS_USED で埋まる
+  updatedAt:     LocalDateTime = Now,     // データ更新日
+  createdAt:     LocalDateTime = Now      // データ作成日
 ) extends EntityModel[Id]:
 
   /** その時点で使えるか。失効は状態ではなく日付で判定する */

@@ -47,7 +47,7 @@ case class PaymentDiscount(
   id:                 Option[Id],                 // 管理Id
   paymentId:          Payment.Id,                 // 決済Id
   couponId:           Coupon.Id,                  // クーポンId
-  couponIssueId:      CouponIssue.Id,             // クーポン: 配布Id
+  couponIssueId:      Option[CouponIssue.Id],     // クーポン: 配布Id。スタンプ引換なら None
   customerCouponId:   Option[CustomerCoupon.Id],  // 顧客: 所持クーポンId
   discountType:       Coupon.DiscountType,        // 割引: 種別
   discountProductId:  Product.Id,                 // 割引: 対象商品Id
