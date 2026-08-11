@@ -14,7 +14,7 @@ import ixias.core.model.*
  *
  * The same discount can be offered several times over: on the list in spring,
  * behind a code in summer, again next year with a different cap. Each of those
- * is a [[CouponIssue]]. Keeping distribution out of here means the wording of
+ * is a [[CouponOffer]]. Keeping distribution out of here means the wording of
  * a discount is edited in one place, however many times it has been offered.
  *
  * `productId` narrows the discount to one product; None applies it to the whole

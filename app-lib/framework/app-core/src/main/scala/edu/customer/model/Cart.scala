@@ -11,7 +11,7 @@ import ixias.core.model.*
 import ixias.core.model.value.Token
 
 import edu.shop.model.Shop
-import edu.common.model.{ Product, Coupon, CouponIssue }
+import edu.common.model.{ Product, Coupon, CouponOffer }
 
 /**
  * Cart: what someone is about to order from one shop.
@@ -80,7 +80,7 @@ object Cart:
    * `couponId` は何が割引されるか（内容のマスタ）。残る 2 つは出どころで、
    * **どちらか一方だけが Some になる。**
    *
-   *  - `couponIssueId`    … 直接消費型（[[CouponIssue.UseType.IS_DIRECT]]）。
+   *  - `couponOfferId`    … 直接消費型（[[CouponOffer.IssueType.IS_DIRECT]]）。
    *                         取得を挟まないので配布口を直に指す
    *  - `customerCouponId` … 付与型。会員が保有する 1 枚を消費する
    *
@@ -90,7 +90,7 @@ object Cart:
    *
    * 使うときに必要な ID とも一致する。直接消費は配布口の期間を見て、付与型は
    * 保有分の有効期限を見る。付与型から配布口をたどりたいときは
-   * [[CustomerCoupon.couponIssueId]] から引ける。
+   * [[CustomerCoupon.couponOfferId]] から引ける。
    *
    * 排他はここでは検査しない。`require` を置くと JSON からの復元時にも走り、
    * 壊れた行が 1 件あるだけで一覧の取得ごと落ちるため。カートに載せる処理と
@@ -101,7 +101,7 @@ object Cart:
    */
   case class UseCoupon(
     couponId:         Coupon.Id,                     // クーポンId
-    couponIssueId:    Option[CouponIssue.Id],        // クーポン: 配布Id（直接消費のとき）
+    couponOfferId:    Option[CouponOffer.Id],        // クーポン: 配布Id（直接消費のとき）
     customerCouponId: Option[CustomerCoupon.Id]      // 顧客: 保有クーポンId（付与型のとき）
   )
 

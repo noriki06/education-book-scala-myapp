@@ -9,7 +9,7 @@ package edu.customer.model
 
 import ixias.core.model.*
 
-import edu.common.model.{ Coupon, CouponIssue, StampCard }
+import edu.common.model.{ Coupon, CouponOffer, StampCard }
 
 /**
  * CustomerCoupon: one coupon a member is holding.
@@ -21,14 +21,14 @@ import edu.common.model.{ Coupon, CouponIssue, StampCard }
  * `couponId` says what the coupon is. The two after it say where it came from,
  * and **only one of them is ever set**:
  *
- *  - `couponIssueId` … taken from a distribution, by code or from the list.
- *                      Only an issue of type IS_GRANTED lands here; a
+ *  - `couponOfferId` … taken from a distribution, by code or from the list.
+ *                      Only an offer of type IS_GRANTED lands here; a
  *                      direct-consumption one is applied straight in the cart
  *                      and leaves no row
  *  - `stampCardId`   … exchanged for a filled [[CustomerStampCard]]
  *
- * A redemption has no issue behind it. An issue answers "by code or from the
- * list, how many, until when", and for a redemption [[StampCard]] has already
+ * An exchange has no offer behind it. An offer answers "by code or from the
+ * list, how many, until when", and for an exchange [[StampCard]] has already
  * answered all of it — pointing at one would mean creating a row with every
  * field empty.
  *
@@ -37,15 +37,15 @@ import edu.common.model.{ Coupon, CouponIssue, StampCard }
  * shortening the validity period retroactively expires coupons people are
  * already holding — the same reason an order line copies its price.
  *
- * The cap on an issue is simply the number of rows pointing at it, so a
- * redeemed coupon never counts against a distribution.
+ * The cap on an offer is simply the number of rows pointing at it, so a coupon
+ * exchanged for a stamp card never counts against a distribution.
  */
 import CustomerCoupon.*
 case class CustomerCoupon(
   id:            Option[Id],              // 保有Id
   customerId:    Customer.Id,             // 顧客Id
   couponId:      Coupon.Id,               // クーポンId
-  couponIssueId: Option[CouponIssue.Id],  // 配布Id（配布から取得したとき）
+  couponOfferId: Option[CouponOffer.Id],  // 配布Id（配布から取得したとき）
   stampCardId:   Option[StampCard.Id],    // 台帳Id（スタンプ引換のとき）
   expiredAt:     Option[LocalDateTime],   // 有効期限。取得時に確定。None は無期限
   state:         Status,                  // 保有状態

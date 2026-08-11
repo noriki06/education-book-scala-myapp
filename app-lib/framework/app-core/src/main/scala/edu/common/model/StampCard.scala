@@ -17,10 +17,10 @@ import ixias.core.model.*
  * that takes money off a bill still goes through
  * [[edu.customer.model.CustomerCoupon]], so pricing has one path to follow.
  *
- * It points at [[Coupon]] and not at [[CouponIssue]] on purpose. An issue
+ * It points at [[Coupon]] and not at [[CouponOffer]] on purpose. An offer
  * answers "how is this handed out — by code, from the list, how many, until
- * when", and for a redemption every one of those is already answered here:
- * whoever filled a card gets one, until `dateEnd`. Pointing at an issue would
+ * when", and for an exchange every one of those is already answered here:
+ * whoever filled a card gets one, until `dateEnd`. Pointing at an offer would
  * mean creating a row with every field empty for each card.
  *
  * How stamps are earned is [[Rule]] — the decision is code, only the numbers

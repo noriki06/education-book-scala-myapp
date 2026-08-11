@@ -25,13 +25,13 @@ import ixias.core.model.*
  */
 import SalesTemplateMenuItem.*
 case class SalesTemplateMenuItem(
-  id:         Option[Id],           // 管理Id
-  templateId: SalesTemplate.Id,     // 販売テンプレートId
-  menuId:     SalesTemplateMenu.Id, // メニューId
-  productId:  Product.Id,           // 商品Id
-  sortOrder:  Short,                // 表示順
-  updatedAt:  LocalDateTime = Now,  // データ更新日
-  createdAt:  LocalDateTime = Now   // データ作成日
+  id:             Option[Id],           // 管理Id
+  templateId:     SalesTemplate.Id,     // 販売テンプレートId
+  templateMenuId: SalesTemplateMenu.Id, // メニューId
+  productId:      Product.Id,           // 商品Id
+  sortOrder:      Short,                // 表示順
+  updatedAt:      LocalDateTime = Now,  // データ更新日
+  createdAt:      LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
 object SalesTemplateMenuItem:
