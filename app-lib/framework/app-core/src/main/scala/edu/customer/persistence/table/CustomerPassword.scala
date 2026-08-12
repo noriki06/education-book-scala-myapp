@@ -15,7 +15,7 @@ import ixias.core.persistence.HostSpec
 import edu.customer.model.{ Customer, CustomerPassword }
 
 /**
- * Table Definition: CustomerPassword (`udb_user_password`)
+ * Table Definition: CustomerPassword (`customer_password`)
  */
 @Singleton
 class CustomerPasswordTable @Inject()(ctx: SlickDatabaseContext)
@@ -29,14 +29,14 @@ class CustomerPasswordTable @Inject()(ctx: SlickDatabaseContext)
 
   val query = TableQuery[Table]
 
-  case class Table(tag: Tag) extends BasicTable(tag, "udb_user_password"):
+  case class Table(tag: Tag) extends BasicTable(tag, "customer_password"):
     import CustomerPassword.*
 
-    @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
-    @col def customerId       = column[Customer.Id]       ("customerId",        O.UInt64)
-    @col def hash      = column[String]        ("hash",       O.Varchar(255, Charset.Ascii))
-    @col def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
-    @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
+    @pk  def id         = column[Id]            ("id",          O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def customerId = column[Customer.Id]   ("customer_id", O.UInt64)
+    @col def hash       = column[String]        ("hash",        O.Varchar(255, Charset.Ascii))
+    @col def updatedAt  = column[LocalDateTime] ("updated_at",  O.Timestamp(onUpdate = true))
+    @col def createdAt  = column[LocalDateTime] ("created_at",  O.Timestamp)
 
     def ukey01 = index("ukey01", customerId, unique = true)
 

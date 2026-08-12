@@ -26,7 +26,7 @@ import edu.customer.model.{ Customer, CustomerSession }
  *
  * Implements ixias's [[ixias.web.play.session.AuthProfile]] on top of
  * [[ixias.web.play.session.TokenManagerViaCookie]]: the cookie carries a
- * *signed* token (`{signature}-{nonce}-{token}`), while `udb_user_session`
+ * *signed* token (`{signature}-{nonce}-{token}`), while `customer_session`
  * stores the raw [[Token]]. A tampered cookie fails the HMAC check before any
  * query runs, and logout revokes the session server-side by deleting the row —
  * so the database stays the single source of truth.

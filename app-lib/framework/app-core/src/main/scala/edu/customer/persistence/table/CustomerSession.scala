@@ -16,7 +16,7 @@ import ixias.core.persistence.HostSpec
 import edu.customer.model.{ Customer, CustomerSession }
 
 /**
- * Table Definition: CustomerSession (`udb_user_session`)
+ * Table Definition: CustomerSession (`customer_session`)
  */
 @Singleton
 class CustomerSessionTable @Inject()(ctx: SlickDatabaseContext)
@@ -30,16 +30,16 @@ class CustomerSessionTable @Inject()(ctx: SlickDatabaseContext)
 
   val query = TableQuery[Table]
 
-  case class Table(tag: Tag) extends BasicTable(tag, "udb_user_session"):
+  case class Table(tag: Tag) extends BasicTable(tag, "customer_session"):
     import CustomerSession.*
 
-    @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
-    @col def customerId       = column[Customer.Id]       ("customerId",        O.UInt64)
-    @col def token     = column[Token]         ("token",      O.Varchar(255, Charset.Ascii))
-    @col def state     = column[Status]        ("state",      O.Int16)
-    @col def expiresAt = column[LocalDateTime] ("expires_at", O.Timestamp)
-    @col def updatedAt = column[LocalDateTime] ("updated_at", O.Timestamp(onUpdate = true))
-    @col def createdAt = column[LocalDateTime] ("created_at", O.Timestamp)
+    @pk  def id         = column[Id]            ("id",          O.UInt64, O.AutoInc, O.PrimaryKey)
+    @col def customerId = column[Customer.Id]   ("customer_id", O.UInt64)
+    @col def token      = column[Token]         ("token",       O.Varchar(255, Charset.Ascii))
+    @col def state      = column[Status]        ("state",       O.Int16)
+    @col def expiresAt  = column[LocalDateTime] ("expires_at",  O.Timestamp)
+    @col def updatedAt  = column[LocalDateTime] ("updated_at",  O.Timestamp(onUpdate = true))
+    @col def createdAt  = column[LocalDateTime] ("created_at",  O.Timestamp)
 
     def ukey01 = index("ukey01", token, unique = true)
     def key01  = index("key01", customerId)

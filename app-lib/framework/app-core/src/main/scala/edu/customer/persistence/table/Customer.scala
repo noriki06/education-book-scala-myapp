@@ -15,7 +15,7 @@ import ixias.core.persistence.HostSpec
 import edu.customer.model.Customer
 
 /**
- * Table Definition: Customer (`udb_user`)
+ * Table Definition: Customer (`customer`)
  */
 @Singleton
 class CustomerTable @Inject()(ctx: SlickDatabaseContext)
@@ -29,7 +29,7 @@ class CustomerTable @Inject()(ctx: SlickDatabaseContext)
 
   val query = TableQuery[Table]
 
-  case class Table(tag: Tag) extends BasicTable(tag, "udb_user"):
+  case class Table(tag: Tag) extends BasicTable(tag, "customer"):
     import Customer.*
 
     @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
