@@ -26,16 +26,18 @@ case class SalesTemplate(
 
 object SalesTemplate:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, SalesTemplate]
   type EmbeddedId = Entity.EmbeddedId[Id, SalesTemplate]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 提供状態 */
+  /**
+   * 提供状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE extends Status(code = -1) // 廃止: 新しい割り当てを止めた
     case IS_ACTIVE  extends Status(code =  1) // 有効

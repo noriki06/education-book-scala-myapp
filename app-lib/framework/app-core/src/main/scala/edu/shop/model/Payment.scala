@@ -47,30 +47,36 @@ case class Payment(
 
 object Payment:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id            = Id.Repr
   type TransactionId = TransactionId.Repr
   type WithNoId      = Entity.WithNoId[Id, Payment]
   type EmbeddedId    = Entity.EmbeddedId[Id, Payment]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
-  /** 決済サービス側の取引Id */
+  /**
+   * 決済サービス側の取引Id
+   */
   object TransactionId extends Entity.Id[String]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 決済手段 */
+  /**
+   * 決済手段
+   */
   enum Method(val code: Short, val name: String) extends EnumStatus[Short]:
-    case IS_CASH   extends Method(code = 0, name = "現金")
-    case IS_CREDIT extends Method(code = 1, name = "クレジットカード")
-    case IS_QR     extends Method(code = 2, name = "QRコード決済")
+    case IS_CASH   extends Method(code = 1, name = "現金")
+    case IS_CREDIT extends Method(code = 2, name = "クレジットカード")
+    case IS_QR     extends Method(code = 3, name = "QRコード決済")
 
-  /** 決済の状態 */
+  /**
+   * 決済の状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_REFUNDED  extends Status(code = -3) // 返金済: 完了後に返した
     case IS_CANCELED  extends Status(code = -2) // 取消:   決済前に注文がキャンセルされた
     case IS_FAILED    extends Status(code = -1) // 失敗:   決済サービスが拒否。再試行は新しい行
-    case IS_DRAFT     extends Status(code =  1) // 下書き: 決済サービスをまだ呼んでいない
-    case IS_PENDING   extends Status(code =  2) // 処理中: 決済サービスの応答待ち
-    case IS_COMPLETED extends Status(code =  3) // 完了:   入金確定
+    case IS_DRAFT     extends Status(code =  0) // 下書き: 決済サービスをまだ呼んでいない
+    case IS_PENDING   extends Status(code =  1) // 処理中: 決済サービスの応答待ち
+    case IS_COMPLETED extends Status(code =  2) // 完了:   入金確定

@@ -25,21 +25,25 @@ case class Customer(
 
 object Customer:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type UUID       = UUID.Repr
   type WithNoId   = Entity.WithNoId[Id, Customer]
   type EmbeddedId = Entity.EmbeddedId[Id, Customer]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
-  /** 公開用の識別子 */
+  /**
+   * 公開用の識別子
+   */
   object UUID extends Entity.Id[String]:
     def generate: UUID = UUID(java.util.UUID.randomUUID.toString)
 
   // --[ Value Objects ]-----------------------------------------------
-  /** アカウント状態 */
+  /**
+   * アカウント状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_INACTIVE extends Status(code = -1) // 停止
     case IS_ACTIVE   extends Status(code =  1) // 有効

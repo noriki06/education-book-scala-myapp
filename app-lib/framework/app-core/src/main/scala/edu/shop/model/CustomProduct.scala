@@ -28,10 +28,10 @@ case class CustomProduct(
 
 object CustomProduct:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomProduct]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomProduct]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

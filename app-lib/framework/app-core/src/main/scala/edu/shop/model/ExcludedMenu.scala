@@ -27,10 +27,10 @@ case class ExcludedMenu(
 
 object ExcludedMenu:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, ExcludedMenu]
   type EmbeddedId = Entity.EmbeddedId[Id, ExcludedMenu]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

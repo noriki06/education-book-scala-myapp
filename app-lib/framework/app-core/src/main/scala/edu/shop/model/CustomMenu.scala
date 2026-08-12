@@ -33,10 +33,10 @@ case class CustomMenu(
 
 object CustomMenu:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomMenu]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomMenu]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

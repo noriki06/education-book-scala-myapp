@@ -36,16 +36,18 @@ case class Shop(
 
 object Shop:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, Shop]
   type EmbeddedId = Entity.EmbeddedId[Id, Shop]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 店舗の状態 */
+  /**
+   * 店舗の状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_CLOSED    extends Status(code = -1) // 休業中: 長期休業・閉店
     case IS_PREPARING extends Status(code =  0) // 開店準備中: まだ注文を受けない

@@ -29,10 +29,10 @@ case class OrderItem(
 
 object OrderItem:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, OrderItem]
   type EmbeddedId = Entity.EmbeddedId[Id, OrderItem]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

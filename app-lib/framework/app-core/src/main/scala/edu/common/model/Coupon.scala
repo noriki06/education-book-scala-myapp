@@ -29,21 +29,25 @@ case class Coupon(
 
 object Coupon:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, Coupon]
   type EmbeddedId = Entity.EmbeddedId[Id, Coupon]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 割引種別: discountValue の読み方が変わる */
+  /**
+   * 割引種別: discountValue の読み方が変わる
+   */
   enum DiscountType(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_FREE   extends DiscountType(code = 1, name = "商品無料")
     case IS_AMOUNT extends DiscountType(code = 2, name = "定額割引")
 
-  /** 提供状態 */
+  /**
+   * 提供状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE   extends Status(code = -1) // 廃止:   新しい配布を止めた
     case IS_PREPARING extends Status(code =  0) // 準備中: 配布はまだ始まっていない

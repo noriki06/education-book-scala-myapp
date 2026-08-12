@@ -28,10 +28,10 @@ case class SalesTemplateMenuItem(
 
 object SalesTemplateMenuItem:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, SalesTemplateMenuItem]
   type EmbeddedId = Entity.EmbeddedId[Id, SalesTemplateMenuItem]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

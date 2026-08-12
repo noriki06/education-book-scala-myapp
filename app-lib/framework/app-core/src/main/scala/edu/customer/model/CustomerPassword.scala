@@ -20,21 +20,19 @@ case class CustomerPassword(
   hash:       String,              // PBKDF2ハッシュ文字列
   updatedAt:  LocalDateTime = Now, // データ更新日
   createdAt:  LocalDateTime = Now  // データ作成日
-) extends EntityModel[Id]:
-
-  /** 平文のパスワードが保存済みハッシュと一致するか */
-  def verify(raw: String): Boolean = PBKDF2.compare(raw, hash)
+) extends EntityModel[Id]
 
 object CustomerPassword:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomerPassword]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomerPassword]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
+  // --[ Factory Methods ]---------------------------------------------
   /**
    * 平文のパスワードを PBKDF2 でハッシュ化して新しい行を作る
    */
@@ -44,3 +42,15 @@ object CustomerPassword:
       customerId = customerId,
       hash       = PBKDF2.hash(raw)
     ).toWithNoId
+
+  // --[ Extensions ]--------------------------------------------------
+  /**
+   * 顧客パスワード: 変数値だけで完結する処理
+   */
+  extension (self: CustomerPassword)
+
+    /**
+     * 平文のパスワードが保存済みハッシュと一致するか
+     */
+    def verify(raw: String): Boolean =
+      PBKDF2.compare(raw, self.hash)

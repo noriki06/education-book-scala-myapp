@@ -26,25 +26,34 @@ case class CustomerStampCard(
   state:          Status,                    // 保有状態
   updatedAt:      LocalDateTime = Now,       // データ更新日
   createdAt:      LocalDateTime = Now        // データ作成日
-) extends EntityModel[Id]:
-
-  /** その日にまだスタンプを押せるカードか */
-  def isCollectingOn(date: LocalDate, ledger: StampCard): Boolean =
-    state != Status.IS_EXCHANGED && ledger.dateEnd.forall(!date.isAfter(_))
+) extends EntityModel[Id]
 
 object CustomerStampCard:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomerStampCard]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomerStampCard]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 保有状態 */
+  /**
+   * 保有状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
-    case IS_EXPIRED    extends Status(code = -1) // 失効の印: 掃除で付ける。判定の正ではない
-    case IS_COLLECTING extends Status(code =  1) // 集め中
-    case IS_EXCHANGED  extends Status(code =  2) // 引換済: クーポンを発行した。ここだけが終端
+    case IS_COLLECTING extends Status(code = 1) // 集め中
+    case IS_EXCHANGED  extends Status(code = 2) // 引換済: クーポンを発行した
+
+  // --[ Extensions ]--------------------------------------------------
+  /**
+   * 保有スタンプカード: 変数値だけで完結する処理
+   */
+  extension (self: CustomerStampCard)
+
+    /**
+     * その日にまだスタンプを押せるカードか。失効は状態ではなく台帳の日付で判定する
+     */
+    def isCollectingOn(date: LocalDate, ledger: StampCard): Boolean =
+      self.state == Status.IS_COLLECTING && ledger.dateEnd.forall(!date.isAfter(_))

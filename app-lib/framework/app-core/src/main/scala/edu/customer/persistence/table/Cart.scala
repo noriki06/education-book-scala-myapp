@@ -42,7 +42,7 @@ class CartTable @Inject()(ctx: SlickDatabaseContext)
 
   val query = TableQuery[Table]
 
-  // --[ JSON codecs ]---------------------------------------------------
+  // --[ JSON codecs ]-------------------------------------------------
   given Encoder[Cart.BuyItem]   = deriveEncoder
   given Decoder[Cart.BuyItem]   = deriveDecoder
   given Encoder[Cart.UseCoupon] = deriveEncoder

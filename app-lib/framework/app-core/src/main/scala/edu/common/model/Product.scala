@@ -28,16 +28,18 @@ case class Product(
 
 object Product:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, Product]
   type EmbeddedId = Entity.EmbeddedId[Id, Product]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 商品カテゴリ: 100 番台が単品、200 番台がセット */
+  /**
+   * 商品カテゴリ: 100 番台が単品、200 番台がセット
+   */
   enum Category(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_BURGER  extends Category(code = 100, name = "バーガー")
     case IS_SIDE    extends Category(code = 101, name = "サイド")
@@ -45,7 +47,9 @@ object Product:
     case IS_DESSERT extends Category(code = 103, name = "デザート")
     case IS_SET     extends Category(code = 200, name = "セットメニュー")
 
-  /** 販売状態 */
+  /**
+   * 販売状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_DISCONTINUED extends Status(code = -1) // 販売終了
     case IS_PLAN         extends Status(code =  0) // 販売予定

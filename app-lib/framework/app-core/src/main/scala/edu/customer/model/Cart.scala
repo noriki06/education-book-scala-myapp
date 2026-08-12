@@ -31,22 +31,19 @@ case class Cart(
   state:      Status        = Status.IS_EDITING, // カートの状態
   updatedAt:  LocalDateTime = Now,               // データ更新日
   createdAt:  LocalDateTime = Now                // データ作成日
-) extends EntityModel[Id]:
-
-  /** ログイン前のカートか */
-  def isAnonymous: Boolean = customerId.isEmpty
+) extends EntityModel[Id]
 
 object Cart:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, Cart]
   type EmbeddedId = Entity.EmbeddedId[Id, Cart]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
-  // --[ Models ]------------------------------------------------------
+  // --[ Value Objects ]-----------------------------------------------
   /**
    * カートに入れた商品
    */
@@ -68,10 +65,23 @@ object Cart:
     customerCouponId: Option[CustomerCoupon.Id]  // 顧客: 保有クーポンId（付与型のとき）
   )
 
-  // --[ Value Objects ]-----------------------------------------------
-  /** カートの状態 */
+  /**
+   * カートの状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_DISCARDED extends Status(code = -1) // 破棄
     case IS_EDITING   extends Status(code =  1) // 編集中
     case IS_ORDERED   extends Status(code =  2) // 注文済み
+
+  // --[ Extensions ]--------------------------------------------------
+  /**
+   * カート: 変数値だけで完結する処理
+   */
+  extension (self: Cart)
+
+    /**
+     * ログイン前のカートか
+     */
+    def isAnonymous: Boolean =
+      self.customerId.isEmpty
 

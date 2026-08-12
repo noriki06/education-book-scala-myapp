@@ -26,16 +26,18 @@ case class CustomerSession(
 
 object CustomerSession:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomerSession]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomerSession]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** セッション状態 */
+  /**
+   * セッション状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_CLOSED extends Status(code = -1) // 無効化: ログアウト済み
     case IS_ACTIVE extends Status(code =  1) // 有効

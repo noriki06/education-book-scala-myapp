@@ -29,10 +29,10 @@ case class CustomerStampCardItem(
 
 object CustomerStampCardItem:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, CustomerStampCardItem]
   type EmbeddedId = Entity.EmbeddedId[Id, CustomerStampCardItem]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

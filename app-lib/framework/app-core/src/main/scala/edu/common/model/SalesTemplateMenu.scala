@@ -37,16 +37,18 @@ case class SalesTemplateMenu(
 
 object SalesTemplateMenu:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, SalesTemplateMenu]
   type EmbeddedId = Entity.EmbeddedId[Id, SalesTemplateMenu]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 公開状態 */
+  /**
+   * 公開状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE extends Status(code = -1) // 取り下げ: 公開したものを下げた
     case IS_PLAN    extends Status(code = 0)  // 準備中: まだ公開していない

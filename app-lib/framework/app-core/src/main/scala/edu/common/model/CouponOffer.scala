@@ -32,23 +32,27 @@ case class CouponOffer(
 
 object CouponOffer:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type Code       = Code.Repr
   type WithNoId   = Entity.WithNoId[Id, CouponOffer]
   type EmbeddedId = Entity.EmbeddedId[Id, CouponOffer]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id   extends Entity.Id[Long]
   object Code extends Entity.Id[String]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 発行形態 */
+  /**
+   * 発行形態
+   */
   enum IssueType(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_DIRECT  extends IssueType(code = 1, name = "直接消費")  // 発行せずカートで使う
     case IS_GRANTED extends IssueType(code = 2, name = "付与消費")  // 発行して保有してから使う
 
-  /** 配布状態 */
+  /**
+   * 配布状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_CLOSED extends Status(code = -1) // 停止: 配布を打ち切った
     case IS_OPEN   extends Status(code =  1) // 配布中

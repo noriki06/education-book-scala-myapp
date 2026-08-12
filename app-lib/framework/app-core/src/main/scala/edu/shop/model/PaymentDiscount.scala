@@ -39,10 +39,10 @@ case class PaymentDiscount(
 
 object PaymentDiscount:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, PaymentDiscount]
   type EmbeddedId = Entity.EmbeddedId[Id, PaymentDiscount]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

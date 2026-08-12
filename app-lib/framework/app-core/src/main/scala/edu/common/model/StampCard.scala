@@ -29,21 +29,25 @@ case class StampCard(
 
 object StampCard:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, StampCard]
   type EmbeddedId = Entity.EmbeddedId[Id, StampCard]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 付与ルール */
+  /**
+   * 付与ルール
+   */
   enum Rule(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_PAYMENT_COUNT  extends Rule(code = 1, name = "会計回数")
     case IS_PAYMENT_AMOUNT extends Rule(code = 2, name = "会計金額")
 
-  /** 提供状態 */
+  /**
+   * 提供状態
+   */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE extends Status(code = -1) // 廃止
     case IS_ACTIVE  extends Status(code =  1) // 有効

@@ -27,10 +27,10 @@ case class ExcludedProduct(
 
 object ExcludedProduct:
 
-  // --[ Typedefs ]----------------------------------------------------
+  // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type WithNoId   = Entity.WithNoId[Id, ExcludedProduct]
   type EmbeddedId = Entity.EmbeddedId[Id, ExcludedProduct]
 
-  // --[ Objects ]-----------------------------------------------------
+  // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
