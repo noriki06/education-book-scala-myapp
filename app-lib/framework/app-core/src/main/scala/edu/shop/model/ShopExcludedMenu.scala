@@ -12,7 +12,7 @@ import ixias.core.model.*
 import edu.common.model.SalesTemplateMenu
 
 /**
- * ShopExclusionMenu: a menu in the shop's template that this shop does not run.
+ * ShopExcludedMenu: a menu in the shop's template that this shop does not run.
  *
  * A negative list. Recording what a shop *cannot* do takes a handful of rows;
  * recording what it *can* would take one row per shop per menu, rewritten
@@ -23,8 +23,8 @@ import edu.common.model.SalesTemplateMenu
  * shop's current template — reassigning a template leaves stale exclusions
  * that are harmless but worth cleaning up.
  */
-import ShopExclusionMenu.*
-case class ShopExclusionMenu(
+import ShopExcludedMenu.*
+case class ShopExcludedMenu(
   id:        Option[Id],           // 管理Id
   shopId:    Shop.Id,              // 店舗Id
   menuId:    SalesTemplateMenu.Id, // 除外するメニューId
@@ -33,12 +33,12 @@ case class ShopExclusionMenu(
   createdAt: LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
-object ShopExclusionMenu:
+object ShopExcludedMenu:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, ShopExclusionMenu]
-  type EmbeddedId = Entity.EmbeddedId[Id, ShopExclusionMenu]
+  type WithNoId   = Entity.WithNoId[Id, ShopExcludedMenu]
+  type EmbeddedId = Entity.EmbeddedId[Id, ShopExcludedMenu]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]

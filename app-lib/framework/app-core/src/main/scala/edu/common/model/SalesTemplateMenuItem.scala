@@ -21,7 +21,7 @@ import ixias.core.model.*
  * property of the pairing.
  *
  * A shop that cannot serve one of these products does not edit the template —
- * it registers [[edu.shop.model.ShopExclusionProduct]].
+ * it registers [[edu.shop.model.ShopExcludedProduct]].
  */
 import SalesTemplateMenuItem.*
 case class SalesTemplateMenuItem(

@@ -12,7 +12,7 @@ import ixias.core.model.*
 import edu.common.model.Product
 
 /**
- * ShopExclusionProduct: a product this shop cannot serve at all.
+ * ShopExcludedProduct: a product this shop cannot serve at all.
  *
  * Independent of menus on purpose. A shop without a fryer cannot serve fries
  * in the grand menu, the morning menu or any seasonal one — stating it once
@@ -21,9 +21,14 @@ import edu.common.model.Product
  * This is a standing limitation of the shop (no equipment, no space), not
  * today's stock. Running out of fries at lunch is a different question with a
  * different lifetime, and does not belong here.
+ *
+ * "Excluded", not "Exclusion", so the name reads as a product rather than as
+ * three nouns in a row. It also states the fact instead of the mechanism: a
+ * negative list is how this is stored, not what it means. [[ShopExcludedMenu]]
+ * is its pair.
  */
-import ShopExclusionProduct.*
-case class ShopExclusionProduct(
+import ShopExcludedProduct.*
+case class ShopExcludedProduct(
   id:        Option[Id],          // 管理Id
   shopId:    Shop.Id,             // 店舗Id
   productId: Product.Id,          // 除外する商品Id
@@ -32,12 +37,12 @@ case class ShopExclusionProduct(
   createdAt: LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
-object ShopExclusionProduct:
+object ShopExcludedProduct:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, ShopExclusionProduct]
-  type EmbeddedId = Entity.EmbeddedId[Id, ShopExclusionProduct]
+  type WithNoId   = Entity.WithNoId[Id, ShopExcludedProduct]
+  type EmbeddedId = Entity.EmbeddedId[Id, ShopExcludedProduct]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]
