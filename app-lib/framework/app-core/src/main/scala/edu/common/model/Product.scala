@@ -26,6 +26,9 @@ case class Product(
   createdAt:   LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 商品: 付随する型と処理の定義
+ */
 object Product:
 
   // --[ Type Aliases ]------------------------------------------------

@@ -27,6 +27,9 @@ case class Coupon(
   createdAt:          LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * クーポン: 付随する型と処理の定義
+ */
 object Coupon:
 
   // --[ Type Aliases ]------------------------------------------------

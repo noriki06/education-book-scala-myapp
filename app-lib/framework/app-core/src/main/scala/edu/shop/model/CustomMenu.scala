@@ -31,6 +31,9 @@ case class CustomMenu(
   createdAt: LocalDateTime = Now        // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 店舗独自メニュー: 付随する型と処理の定義
+ */
 object CustomMenu:
 
   // --[ Type Aliases ]------------------------------------------------

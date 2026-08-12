@@ -37,6 +37,9 @@ case class PaymentDiscount(
   createdAt:          LocalDateTime = Now         // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 決済割引: 付随する型と処理の定義
+ */
 object PaymentDiscount:
 
   // --[ Type Aliases ]------------------------------------------------

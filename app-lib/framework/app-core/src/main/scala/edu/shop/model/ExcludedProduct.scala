@@ -25,6 +25,9 @@ case class ExcludedProduct(
   createdAt: LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 除外商品: 付随する型と処理の定義
+ */
 object ExcludedProduct:
 
   // --[ Type Aliases ]------------------------------------------------

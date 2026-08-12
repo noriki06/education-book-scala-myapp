@@ -35,6 +35,9 @@ case class SalesTemplateMenu(
   createdAt:  LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 販売テンプレートのメニュー: 付随する型と処理の定義
+ */
 object SalesTemplateMenu:
 
   // --[ Type Aliases ]------------------------------------------------

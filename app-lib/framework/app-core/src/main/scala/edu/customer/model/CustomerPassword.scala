@@ -22,6 +22,9 @@ case class CustomerPassword(
   createdAt:  LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 顧客パスワード: 付随する型と処理の定義
+ */
 object CustomerPassword:
 
   // --[ Type Aliases ]------------------------------------------------

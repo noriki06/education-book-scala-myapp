@@ -23,6 +23,9 @@ case class Customer(
   createdAt: LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 顧客: 付随する型と処理の定義
+ */
 object Customer:
 
   // --[ Type Aliases ]------------------------------------------------

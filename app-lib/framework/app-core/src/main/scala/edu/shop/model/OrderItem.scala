@@ -27,6 +27,9 @@ case class OrderItem(
   createdAt:  LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 注文明細: 付随する型と処理の定義
+ */
 object OrderItem:
 
   // --[ Type Aliases ]------------------------------------------------

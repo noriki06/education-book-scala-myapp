@@ -33,6 +33,9 @@ case class Cart(
   createdAt:  LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * カート: 付随する型と処理の定義
+ */
 object Cart:
 
   // --[ Type Aliases ]------------------------------------------------

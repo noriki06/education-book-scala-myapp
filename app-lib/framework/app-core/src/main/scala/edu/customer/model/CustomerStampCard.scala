@@ -28,6 +28,9 @@ case class CustomerStampCard(
   createdAt:      LocalDateTime = Now        // データ作成日
 ) extends EntityModel[Id]
 
+/**
+ * 保有スタンプカード: 付随する型と処理の定義
+ */
 object CustomerStampCard:
 
   // --[ Type Aliases ]------------------------------------------------
