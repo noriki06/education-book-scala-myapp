@@ -8,62 +8,20 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.customer.model.Customer
 
 /**
- * Payment: what an order was actually charged.
+ * 決済: 注文に対して実際に請求した記録。
  *
- * The amounts live here rather than on [[Order]] because they are a different
- * kind of fact. An order records what was asked for; a payment records what was
- * charged, at the tax rate and the prices of that moment. A price revision or a
- * tax change must never move a figure on a confirmed payment.
- *
- * Two groups of figures. `bill*` is the breakdown as it was calculated; `pay*`
- * is what actually moved. Every one of them is stored, including the parts
- * that look derivable — they are the numbers printed on the receipt, and
- * rounding rules change. `billTaxTotal` matters most: it is the rounded
- * result, not the rate applied a second time.
- *
- * The figures hold this relationship, which the type cannot enforce:
+ * 金額は 2 つのグループに分かれる。
+ *   `bill*` は計算した内訳
+ *   `pay*`  は実際に動いた額。
  *
  * {{{
  *   billTaxTotal   = round((billSubTotal - billDiscountTotal) * billTaxRate)
  *   payBilledTotal = billSubTotal - billDiscountTotal + billTaxTotal
  *   0 <= payRefundedTotal <= payBilledTotal
  * }}}
- *
- * That places the discount before tax — the customer is taxed on what they
- * actually pay for. Discounting after tax would give a different total. Note
- * that the sum of the breakdown lands in `payBilledTotal`: the `bill*` group
- * holds the parts, and the first figure that counts as actual is a `pay*` one.
- *
- * Sales and refunds are separate accounts, so the two are never netted into
- * one column. `payBilledTotal` is fixed once the settlement completes and a
- * later refund does not touch it; the refund lands in `payRefundedTotal` with
- * its own date. A January sale refunded in March must leave January alone.
- *
- * {{{
- *   売上 = SUM(pay_billed_total)   WHERE state IN (IS_COMPLETED, IS_REFUNDED)
- *   返金 = SUM(pay_refunded_total) -- payRefundedAt の月で集計する
- * }}}
- *
- * Only one refund fits. A second partial refund has nowhere to record its own
- * date, and that is the point where refunds become their own entity.
- *
- * An order has many payment rows, not one. A declined card is not corrected in
- * place: the failed row stays as the record of what was attempted, and the
- * customer picking a different method creates a new row. Of all the rows
- * against one order, at most one ever reaches IS_COMPLETED.
- *
- * That means no unique constraint on `orderId` — "only one live payment" is a
- * rule the application keeps, not the database. Overwriting the failed row
- * instead would have bought the constraint at the price of the history, and
- * the history is what answers "why was this customer charged twice".
- *
- * `billTaxRate` is the rate this settlement was closed at, kept for the books.
- * It is a record of a moment, not a lookup — a later rate change leaves it
- * alone.
  */
 import Payment.*
 case class Payment(
@@ -98,33 +56,17 @@ object Payment:
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]
 
-  /**
-   * 決済サービス側の取引Id。
-   *
-   * こちらの記録と向こうの台帳を突き合わせる唯一の手がかりで、「二重に引き落と
-   * された」という問い合わせで最初に聞かれる値。素の String と混ざらないよう
-   * 専用の型にする。
-   *
-   * 決済サービスを呼ぶ前に行を作るため Option。通信が切れて結果が分からなく
-   * なっても、「呼んだ形跡」が残る。現金決済では最後まで None のまま。
-   */
+  /** 決済サービス側の取引Id */
   object TransactionId extends Entity.Id[String]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 決済手段: 区分値なので 0 から振る */
+  /** 決済手段 */
   enum Method(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_CASH   extends Method(code = 0, name = "現金")
     case IS_CREDIT extends Method(code = 1, name = "クレジットカード")
     case IS_QR     extends Method(code = 2, name = "QRコード決済")
 
-  /**
-   * 決済の状態。
-   *
-   * 正の側が正常な進行（下書き → 処理中 → 完了）、負の側がそこから外れた
-   * 終わり方。**失敗した行は書き換えず残す** ——支払い方法を変えて再試行する
-   * ときは新しい行を作る。1 注文に複数行が並び、IS_COMPLETED に到達するのは
-   * 最大 1 行。
-   */
+  /** 決済の状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_REFUNDED  extends Status(code = -3) // 返金済: 完了後に返した
     case IS_CANCELED  extends Status(code = -2) // 取消:   決済前に注文がキャンセルされた

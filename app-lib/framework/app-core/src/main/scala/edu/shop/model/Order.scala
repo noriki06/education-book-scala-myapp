@@ -8,24 +8,12 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.customer.model.Customer
 
 /**
- * Order: a purchase that has been confirmed.
- *
- * It lives in `shop` because the shop is what moves it forward — accepted,
- * cooking, ready, handed over. The member creates it, but every state after
- * that is a staff action on the store tablet.
- *
- * It holds no amounts. What was charged — subtotal, discount, tax, total — is
- * [[Payment]], because those figures must survive a price or tax revision and
- * an order does not.
- *
- * `code` is what the counter calls out and what appears in URLs. The
- * auto-increment `id` never leaves the database: a sequential number in public
- * leaks how many orders exist and invites reading someone else's order by
- * subtracting one.
+ * 注文: 確定した注文。
+ * 金額は持たず、請求額の内訳は [[Payment]] が保持する。
+ * `code` は外部に見せる受付番号。
  */
 import Order.*
 case class Order(
@@ -54,7 +42,7 @@ object Order:
     def generate: Code = Code(java.util.UUID.randomUUID.toString.take(8).toUpperCase)
 
   // --[ Value Objects ]-----------------------------------------------
-  /** Order status. The happy path runs 1 → 2 → 3 → 4; cancellation leaves it. */
+  /** 注文の状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_CANCELED extends Status(code = -1) // キャンセル
     case IS_ACCEPTED extends Status(code =  1) // 受付

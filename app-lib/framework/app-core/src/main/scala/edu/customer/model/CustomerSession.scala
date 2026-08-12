@@ -11,13 +11,7 @@ import ixias.core.model.*
 import ixias.core.model.value.Token
 
 /**
- * CustomerSession: a server-side login session.
- *
- * After login succeeds a random [[Token]] is issued, stored here, and handed to
- * the client in an httpOnly cookie — signed, so the cookie value is the
- * `SignedToken` form (`{signature}-{nonce}-{token}`) while this table keeps the
- * raw token. Subsequent requests verify the signature, recover the raw token,
- * and resolve the user by looking it up here.
+ * 顧客セッション: サーバ側で保持するログインセッション。
  */
 import CustomerSession.*
 case class CustomerSession(
@@ -41,7 +35,7 @@ object CustomerSession:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** Session status */
+  /** セッション状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
-    case IS_CLOSED extends Status(code = -1) // Closed / invalidated
-    case IS_ACTIVE extends Status(code =  1) // Active
+    case IS_CLOSED extends Status(code = -1) // 無効化: ログアウト済み
+    case IS_ACTIVE extends Status(code =  1) // 有効

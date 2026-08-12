@@ -8,41 +8,27 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.common.model.Product
 
 /**
- * CustomMenuItem: one product on a shop's own menu tab.
+ * 店舗独自メニューの表示アイテム
+ * 店舗独自タブに並ぶ商品。
  *
- * A shop's tab may hold either kind of product, so there are two references
- * and **only one of them is ever set**:
- *
- *  - `productId`       … a head office product ([[Product]])
- *  - `productCustomId` … one the shop invented ([[CustomProduct]])
- *
- * They cannot be one column. The two Ids are distinct opaque types, and a
- * single `Long` would give up both the foreign key and the compiler's ability
- * to catch a swap — the same reason [[ExcludedProduct]] and
- * [[ExcludedMenu]] stay apart rather than sharing a `targetId`.
- *
- * The exclusion is not checked here, the way `Cart.UseCoupon` leaves its own
- * alone: a `require` would fire while reading rows back, and one bad row would
- * take a whole menu down with it. Registration checks it instead.
- *
- * A head office product listed here is not a way around
- * [[ExcludedProduct]]. Exclusion is a standing limitation of the shop — no
- * fryer means no fries, on any tab — so it wins wherever it appears.
+ * 本部商品と店舗独自商品のどちらも載るため参照を 2 つ持ち、
+ * どちらか一方だけがSome になる
+ *  - `productId`       … 本部商品（[[Product]]）
+ *  - `productCustomId` … 店舗独自商品（[[CustomProduct]]）
  */
 import CustomMenuItem.*
 case class CustomMenuItem(
-  id:              Option[Id],                   // 管理Id
-  shopId:          Shop.Id,                      // 店舗Id
+  id:              Option[Id],               // 管理Id
+  shopId:          Shop.Id,                  // 店舗Id
   menuId:          CustomMenu.Id,            // メニューId
-  productId:       Option[Product.Id],           // 商品: 本部商品Id
+  productId:       Option[Product.Id],       // 商品: 本部商品Id
   productCustomId: Option[CustomProduct.Id], // 商品: 店舗独自商品Id
-  sortOrder:       Short,                        // 表示順
-  updatedAt:       LocalDateTime = Now,          // データ更新日
-  createdAt:       LocalDateTime = Now           // データ作成日
+  sortOrder:       Short,                    // 表示順
+  updatedAt:       LocalDateTime = Now,      // データ更新日
+  createdAt:       LocalDateTime = Now       // データ作成日
 ) extends EntityModel[Id]
 
 object CustomMenuItem:

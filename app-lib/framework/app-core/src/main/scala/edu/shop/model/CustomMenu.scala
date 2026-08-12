@@ -8,26 +8,13 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.common.model.SalesTemplateMenu
 
 /**
- * CustomMenu: a menu tab this shop runs on its own.
+ * 店舗独自メニュー: 店舗が自分で立てるタブ。
  *
- * Same shape as [[SalesTemplateMenu]] with one structural difference: no
- * `templateId`. A head office menu reaches a shop because the shop runs that
- * template; this one belongs to the shop directly, so head office reassigning
- * a template leaves it untouched.
- *
- * `sortOrder` competes in the same list as the head office tabs, which is what
- * lets a shop slot its own tab between two of theirs rather than always after.
- *
- * `state` reuses [[SalesTemplateMenu.Status]] so both kinds of tab publish and
- * archive on the same three codes, and the app needs one mapping instead of
- * two that drift.
- *
- * The date and time windows work exactly as on the head office menu: either
- * side of either may be None, and all four None is a permanent, all-day tab.
+ * [[SalesTemplateMenu]] とほぼ同じ形だが、テンプレートに属さないので
+ * `templateId` を持たない。販売期間の 2 つの枠の扱いは本部メニューと同じ。
  */
 import CustomMenu.*
 case class CustomMenu(

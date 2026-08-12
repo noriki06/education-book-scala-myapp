@@ -10,18 +10,10 @@ package edu.common.model
 import ixias.core.model.*
 
 /**
- * SalesTemplateMenuItem: which products a menu lists, and in what order.
+ * 販売テンプレートのメニューの表示アイテム
+ * メニューに並ぶ商品と、その表示順。
  *
- * The crossing of [[SalesTemplateMenu]] and [[Product]]. One product appears
- * in several menus (a burger in both the grand menu and a seasonal one) and a
- * menu holds many products, so the pairing is its own entity.
- *
- * `sortOrder` belongs here rather than on the product: the same burger may be
- * shown first in the seasonal menu and fifth in the grand menu. The order is a
- * property of the pairing.
- *
- * A shop that cannot serve one of these products does not edit the template —
- * it registers [[edu.shop.model.ExcludedProduct]].
+ * [[SalesTemplateMenu]] と [[Product]] の対応を表す。
  */
 import SalesTemplateMenuItem.*
 case class SalesTemplateMenuItem(

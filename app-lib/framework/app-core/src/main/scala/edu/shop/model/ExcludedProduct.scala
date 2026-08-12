@@ -8,24 +8,12 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.common.model.Product
 
 /**
- * ExcludedProduct: a product this shop cannot serve at all.
- *
- * Independent of menus on purpose. A shop without a fryer cannot serve fries
- * in the grand menu, the morning menu or any seasonal one — stating it once
- * against the product covers every menu, now and in the future.
- *
- * This is a standing limitation of the shop (no equipment, no space), not
- * today's stock. Running out of fries at lunch is a different question with a
- * different lifetime, and does not belong here.
- *
- * "Excluded", not "Exclusion", so the name reads as a product rather than as
- * three nouns in a row. It also states the fact instead of the mechanism: a
- * negative list is how this is stored, not what it means. [[ExcludedMenu]]
- * is its pair.
+ * 除外商品: この店舗が提供できない商品の登録。
+ * メニューとは独立して除外商品を登録することで、
+ * メニューに載っている商品でも除外できる。
  */
 import ExcludedProduct.*
 case class ExcludedProduct(

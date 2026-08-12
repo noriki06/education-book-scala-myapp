@@ -10,16 +10,9 @@ package edu.common.model
 import ixias.core.model.*
 
 /**
- * SalesTemplate: a reusable set of menus a shop can be assigned (default,
- * large store, small store).
+ * 販売テンプレート: 店舗に割り当てるメニュー構成のひな型。
  *
- * Head office builds a handful of these; every shop points at exactly one.
- * Without it, opening a store would mean re-entering the whole menu structure,
- * and a chain-wide change would mean editing every shop.
- *
- * A shop that cannot handle part of its template does not get its own copy —
- * it registers exclusions ([[edu.shop.model.ExcludedMenu]]). Templates
- * stay few; the differences stay small and visible.
+ * 本部がいくつか用意し、各店舗はこのうち 1 つを参照する。
  */
 import SalesTemplate.*
 case class SalesTemplate(
@@ -42,7 +35,7 @@ object SalesTemplate:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 提供状態: 廃止しても店舗が参照したままなので、行は消さない */
+  /** 提供状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE extends Status(code = -1) // 廃止: 新しい割り当てを止めた
     case IS_ACTIVE  extends Status(code =  1) // 有効

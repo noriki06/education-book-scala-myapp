@@ -12,33 +12,11 @@ import ixias.core.model.*
 import edu.common.model.{ Coupon, CouponOffer, StampCard }
 
 /**
- * CustomerCoupon: one coupon a member is holding.
+ * 会員が保有しているクーポン 1 枚。
  *
- * The package repeats the prefix, and the prefix stays: without it the short
- * name is [[Coupon]], which head office already owns. A prefix is dropped
- * because the short name is free, not because the package makes it redundant.
- *
- * `couponId` says what the coupon is. The two after it say where it came from,
- * and **only one of them is ever set**:
- *
- *  - `couponOfferId` … taken from a distribution, by code or from the list.
- *                      Only an offer of type IS_GRANTED lands here; a
- *                      direct-consumption one is applied straight in the cart
- *                      and leaves no row
- *  - `stampCardId`   … exchanged for a filled [[CustomerStampCard]]
- *
- * An exchange has no offer behind it. An offer answers "by code or from the
- * list, how many, until when", and for an exchange [[StampCard]] has already
- * answered all of it — pointing at one would mean creating a row with every
- * field empty.
- *
- * `expiredAt` is fixed at the moment of acquisition from the coupon's
- * `validDays`, not read back from the master. Reading it back would mean that
- * shortening the validity period retroactively expires coupons people are
- * already holding — the same reason an order line copies its price.
- *
- * The cap on an offer is simply the number of rows pointing at it, so a coupon
- * exchanged for a stamp card never counts against a distribution.
+ * `couponId` は割引の内容
+ *  - `couponOfferId` … 配布から取得したとき（[[CouponOffer]] の付与型）
+ *  - `stampCardId`   … [[CustomerStampCard]] の引き換えで発行されたとき
  */
 import CustomerCoupon.*
 case class CustomerCoupon(
@@ -69,12 +47,7 @@ object CustomerCoupon:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /**
-   * 保有状態。
-   *
-   * 失効を状態に持たないのは、期限切れが時刻の経過だけで起きるため。状態に
-   * するとその瞬間に書き換えるバッチが要り、落ちた日に嘘をつく。
-   */
+  /** 保有状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_REVOKED extends Status(code = -1) // 取消: 不正取得などで運営が回収した
     case IS_UNUSED  extends Status(code =  1) // 未使用

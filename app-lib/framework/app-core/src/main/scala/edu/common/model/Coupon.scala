@@ -10,16 +10,9 @@ package edu.common.model
 import ixias.core.model.*
 
 /**
- * Coupon: what a discount is — and nothing about how it is handed out.
+ * クーポン: 割引の内容を定義する本部マスタ。
  *
- * The same discount can be offered several times over: on the list in spring,
- * behind a code in summer, again next year with a different cap. Each of those
- * is a [[CouponOffer]]. Keeping distribution out of here means the wording of
- * a discount is edited in one place, however many times it has been offered.
- *
- * `productId` narrows the discount to one product; None applies it to the whole
- * cart. A discount on "any burger" is not expressible — that needs a category
- * or a list, and neither is in scope.
+ * 配布方法は持たない。誰にどう配るかは [[CouponOffer]] が受け持つ。
  */
 import Coupon.*
 case class Coupon(
@@ -45,12 +38,12 @@ object Coupon:
   object Id extends Entity.Id[Long]
 
   // --[ Value Objects ]-----------------------------------------------
-  /** 割引種別: 区分値なので 0 から振る。discountValue の読み方が変わる */
+  /** 割引種別: discountValue の読み方が変わる */
   enum DiscountType(val code: Short, val name: String) extends EnumStatus[Short]:
     case IS_FREE   extends DiscountType(code = 1, name = "商品無料")
     case IS_AMOUNT extends DiscountType(code = 2, name = "定額割引")
 
-  /** 提供状態: 廃止しても発行済みのクーポンは残るため、行は消さない */
+  /** 提供状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_ARCHIVE   extends Status(code = -1) // 廃止:   新しい配布を止めた
     case IS_PREPARING extends Status(code =  0) // 準備中: 配布はまだ始まっていない

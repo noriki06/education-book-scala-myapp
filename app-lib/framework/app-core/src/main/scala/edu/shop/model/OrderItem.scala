@@ -8,25 +8,12 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.common.model.Product
 import edu.customer.model.Customer
 
 /**
- * OrderItem: one line of a confirmed order — what was asked for, not what it
- * cost.
- *
- * The line keeps a reference and a count, nothing else. Money is not recorded
- * per line because it does not need to be: [[Payment]] freezes the subtotal,
- * the tax and the billed total at settlement, so a later price revision cannot
- * move what the customer was charged.
- *
- * What that costs is the per-line breakdown. A receipt reprinted next year can
- * still show the correct total, but the amount beside each line has to be read
- * from today's [[Product]], and after a revision those amounts will no longer
- * add up to the total. Recording `productName` and `unitPrice` here is what
- * makes a line reproducible; it is deliberately not done while the total is
- * the only figure the business asks to reproduce.
+ * 注文明細: 確定した注文 1 行。
+ * 商品への参照と個数だけを持つ。
  */
 import OrderItem.*
 case class OrderItem(

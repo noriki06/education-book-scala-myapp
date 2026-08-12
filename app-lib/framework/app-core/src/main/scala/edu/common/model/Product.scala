@@ -10,18 +10,8 @@ package edu.common.model
 import ixias.core.model.*
 
 /**
- * Product: one thing on sale (a burger, a drink, a set).
- *
- * A set is a Product too, holding the products it contains in `subItem`. That
- * keeps pricing, availability and display on one path instead of two.
- *
- * `price` is the current price. An order never reads it back: an order line
- * copies the price it was charged at ([[edu.customer.model.OrderItem]]), so a
- * price revision here can never rewrite past orders.
- *
- * Named Product, not MenuItem: `*Item` is the suffix for a line — a cart line,
- * an order line, a line on a menu ([[SalesTemplateMenuItem]]). Using it for the
- * thing being sold as well would make `Item` mean two things in one file.
+ * 商品: 販売する 1 品（バーガー / ドリンク / セットなど）。
+ * セットメニューも商品として扱い、含まれる商品を `subItem` に持つ。
  */
 import Product.*
 case class Product(
@@ -55,7 +45,7 @@ object Product:
     case IS_DESSERT extends Category(code = 103, name = "デザート")
     case IS_SET     extends Category(code = 200, name = "セットメニュー")
 
-  /** Sales status. Discontinued products stay readable for past orders. */
+  /** 販売状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_DISCONTINUED extends Status(code = -1) // 販売終了
     case IS_PLAN         extends Status(code =  0) // 販売予定

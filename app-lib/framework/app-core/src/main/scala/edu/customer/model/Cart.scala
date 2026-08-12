@@ -14,22 +14,11 @@ import edu.shop.model.Shop
 import edu.common.model.{ Product, Coupon, CouponOffer }
 
 /**
- * Cart: what someone is about to order from one shop.
+ * カート: ある店舗に対して注文しようとしている内容。
  *
- * Kept on the server, not in the browser, so the phone and the desktop show
- * the same cart and closing the app does not empty it.
- *
- * The cart is identified by its own `token`, not by who owns it. Requiring a
- * customer would mean asking people to log in before they can put anything in
- * the basket, which is the surest way to lose them — they browse first and
- * sign in at checkout. `customerId` is therefore filled in later, when they do.
- *
- * The token lives in a cookie exactly as [[CustomerSession]]'s does, so an
- * anonymous cart survives a page reload and a return visit.
- *
- * A cart holds no totals. It is a draft, so prices must follow the current
- * menu — the sum is recomputed every time it is shown. The opposite is true
- * of an order, which freezes what was charged (see [[edu.shop.model.Order]]).
+ * ログインしていなくても利用できる。
+ * 誰のものかではなくカート自身の `token`で識別し、
+ * `customerId` はログインしたときに後から紐づけることができる
  */
 import Cart.*
 case class Cart(
@@ -44,7 +33,7 @@ case class Cart(
   createdAt:  LocalDateTime = Now                // データ作成日
 ) extends EntityModel[Id]:
 
-  /** ログイン前のカートか。true の間は付与型クーポンを載せられない */
+  /** ログイン前のカートか */
   def isAnonymous: Boolean = customerId.isEmpty
 
 object Cart:
@@ -59,15 +48,7 @@ object Cart:
 
   // --[ Models ]------------------------------------------------------
   /**
-   * カートに入れた商品 1 行。
-   *
-   * 商品への参照と個数しか持たない。カートは「これから買うもの」の下書きな
-   * ので、本部が夜に値上げしたら翌朝のカートは新しい価格で見えるべきであり、
-   * 価格は表示のたびに [[Product]] から引く。
-   *
-   * 注文が確定すると [[edu.shop.model.OrderItem]] へ移る。あちらも参照しか
-   * 持たない形にしてあり、確定した金額は [[edu.shop.model.Payment]] がまとめて
-   * 保持する。
+   * カートに入れた商品
    */
   case class BuyItem(
     productId:  Product.Id,  // 商品Id
@@ -75,29 +56,11 @@ object Cart:
   )
 
   /**
-   * カートに適用したクーポン 1 行。
+   * カートに適用したクーポン
    *
-   * `couponId` は何が割引されるか（内容のマスタ）。残る 2 つは出どころで、
-   * **どちらか一方だけが Some になる。**
-   *
-   *  - `couponOfferId`    … 直接消費型（[[CouponOffer.IssueType.IS_DIRECT]]）。
-   *                         取得を挟まないので配布口を直に指す
+   * `couponId` は割引の内容。
+   *  - `couponOfferId`    … 直接消費型（[[CouponOffer.IssueType.IS_DIRECT]]）
    *  - `customerCouponId` … 付与型。会員が保有する 1 枚を消費する
-   *
-   * 両方を持たせると、直接消費と「付与型なのに保有分が指定されていない設定
-   * ミス」が同じ形になり、区別できなくなる。一方だけにすれば、**どちらが入って
-   * いるかがそのまま消費形態を語る。**
-   *
-   * 使うときに必要な ID とも一致する。直接消費は配布口の期間を見て、付与型は
-   * 保有分の有効期限を見る。付与型から配布口をたどりたいときは
-   * [[CustomerCoupon.couponOfferId]] から引ける。
-   *
-   * 排他はここでは検査しない。`require` を置くと JSON からの復元時にも走り、
-   * 壊れた行が 1 件あるだけで一覧の取得ごと落ちるため。カートに載せる処理と
-   * 会計処理で守る。
-   *
-   * 割引額はここに持たない。金額が決まるのは会計時なので、実際に引いた額は
-   * [[edu.shop.model.PaymentDiscount]] に記録される。
    */
   case class UseCoupon(
     couponId:         Coupon.Id,                 // クーポンId
@@ -106,10 +69,7 @@ object Cart:
   )
 
   // --[ Value Objects ]-----------------------------------------------
-  /**
-   * Cart status. An ordered cart is kept,
-   * not deleted — it is the draft an order came from.
-   */
+  /** カートの状態 */
   enum Status(val code: Short) extends EnumStatus[Short]:
     case IS_DISCARDED extends Status(code = -1) // 破棄
     case IS_EDITING   extends Status(code =  1) // 編集中

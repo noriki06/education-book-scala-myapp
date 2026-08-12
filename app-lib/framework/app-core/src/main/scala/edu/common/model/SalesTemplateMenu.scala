@@ -10,26 +10,15 @@ package edu.common.model
 import ixias.core.model.*
 
 /**
- * SalesTemplateMenu: one menu inside a template (grand, morning, night,
- * seasonal) — the tabs across the top of the ordering screen.
+ * 販売テンプレートのメニュー: 注文画面のタブにあたる区分（グランド / 朝 / 夜 / 期間限定）。
  *
- * A limited-time menu is not a separate concept: it is a menu with a bounded
- * window. Modelling a campaign apart would duplicate the listing, the ordering
- * and the screen for something that differs only by having an end.
+ * 販売できる期間を 2 つの枠で持つ。
  *
- * When it is sold is two independent windows, written differently on purpose:
+ *  - `dateStart` 〜 `dateEnd`  … 販売する日の範囲。両端を含む
+ *  - `timeStart` ＋ `timeOpen` … その日のうち注文できる時間帯。終了時刻ではなく
+ *    長さで持つので、深夜をまたぐ時間帯も 1 組で表せる
  *
- *  - `salesStartDate` .. `salesEndDate` — on which days the menu is offered
- *    ("the spring menu runs 3/1 to 5/31"). A pair of dates, both ends
- *    inclusive, because that is how the business says it.
- *  - `salesStartTime` ＋ `salesDuration` — within those days, the hours it can
- *    be ordered ("breakfast from 5:00 for 5h30m"). A length, not an end time,
- *    so a window crossing midnight (22:00 for 4h) stays one value and cannot
- *    be written the wrong way round. Same reason as
- *    [[edu.shop.model.ShopBusinessHour]].
- *
- * Either side of either window may be None — no limit on that side. All four
- * None is a permanent, all-day menu.
+ * どちらの枠も、片側が None ならその側に制限がない。4 つとも None なら常時販売。
  */
 import SalesTemplateMenu.*
 case class SalesTemplateMenu(

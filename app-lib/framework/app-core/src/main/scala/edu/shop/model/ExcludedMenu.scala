@@ -8,26 +8,11 @@
 package edu.shop.model
 
 import ixias.core.model.*
-
 import edu.common.model.{ SalesTemplate, SalesTemplateMenu }
 
 /**
- * ExcludedMenu: a menu in the shop's template that this shop does not run.
- *
- * A negative list. Recording what a shop *cannot* do takes a handful of rows;
- * recording what it *can* would take one row per shop per menu, rewritten
- * every time head office adds a menu.
- *
- * A row may be registered before the menu goes public, so a shop can decline a
- * seasonal menu in advance.
- *
- * `templateId` rides along with the menu, as it does on
- * [[edu.common.model.SalesTemplateMenuItem]]. It is the ancestor the row was
- * written against, which is what makes a stale exclusion visible: move a shop
- * to another template and its old rows still name the one they were meant for,
- * so they can be found and cleaned up instead of silently applying to a menu
- * nobody chose. Nothing here enforces the pair — the menu it names is the one
- * that matters at read time.
+ * 除外メニュー: この店舗が運用しないメニューの登録。
+ * `templateId` は登録した時点の販売テンプレート。
  */
 import ExcludedMenu.*
 case class ExcludedMenu(
