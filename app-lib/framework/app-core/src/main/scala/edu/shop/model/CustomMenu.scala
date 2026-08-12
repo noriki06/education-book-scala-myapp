@@ -12,7 +12,7 @@ import ixias.core.model.*
 import edu.common.model.SalesTemplateMenu
 
 /**
- * ShopCustomMenu: a menu tab this shop runs on its own.
+ * CustomMenu: a menu tab this shop runs on its own.
  *
  * Same shape as [[SalesTemplateMenu]] with one structural difference: no
  * `templateId`. A head office menu reaches a shop because the shop runs that
@@ -29,8 +29,8 @@ import edu.common.model.SalesTemplateMenu
  * The date and time windows work exactly as on the head office menu: either
  * side of either may be None, and all four None is a permanent, all-day tab.
  */
-import ShopCustomMenu.*
-case class ShopCustomMenu(
+import CustomMenu.*
+case class CustomMenu(
   id:        Option[Id],                // メニューId
   shopId:    Shop.Id,                   // 店舗Id
   name:      String,                    // メニュー名 (例: 当店限定)
@@ -44,12 +44,12 @@ case class ShopCustomMenu(
   createdAt: LocalDateTime = Now        // データ作成日
 ) extends EntityModel[Id]
 
-object ShopCustomMenu:
+object CustomMenu:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, ShopCustomMenu]
-  type EmbeddedId = Entity.EmbeddedId[Id, ShopCustomMenu]
+  type WithNoId   = Entity.WithNoId[Id, CustomMenu]
+  type EmbeddedId = Entity.EmbeddedId[Id, CustomMenu]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]

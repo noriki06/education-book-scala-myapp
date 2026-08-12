@@ -18,7 +18,7 @@ import ixias.core.model.*
  * and a chain-wide change would mean editing every shop.
  *
  * A shop that cannot handle part of its template does not get its own copy —
- * it registers exclusions ([[edu.shop.model.ShopExcludedMenu]]). Templates
+ * it registers exclusions ([[edu.shop.model.ExcludedMenu]]). Templates
  * stay few; the differences stay small and visible.
  */
 import SalesTemplate.*

@@ -12,9 +12,9 @@ import ixias.core.model.*
 import edu.common.model.Product
 
 /**
- * ShopCustomProduct: a product that exists only at this shop.
+ * CustomProduct: a product that exists only at this shop.
  *
- * The other half of [[ShopExcludedProduct]]. One takes a head office product
+ * The other half of [[ExcludedProduct]]. One takes a head office product
  * away from a shop; this one adds a product head office never defined — the
  * local speciality, the tie-up with the shop next door.
  *
@@ -32,8 +32,8 @@ import edu.common.model.Product
  * shop-local set would have to hold both kinds of product in `subItem`, which
  * no single Id type can express. Sets stay with [[Product]].
  */
-import ShopCustomProduct.*
-case class ShopCustomProduct(
+import CustomProduct.*
+case class CustomProduct(
   id:          Option[Id],           // 商品Id
   shopId:      Shop.Id,              // 店舗Id
   name:        String,               // 商品名
@@ -45,12 +45,12 @@ case class ShopCustomProduct(
   createdAt:   LocalDateTime = Now   // データ作成日
 ) extends EntityModel[Id]
 
-object ShopCustomProduct:
+object CustomProduct:
 
   // --[ Typedefs ]----------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, ShopCustomProduct]
-  type EmbeddedId = Entity.EmbeddedId[Id, ShopCustomProduct]
+  type WithNoId   = Entity.WithNoId[Id, CustomProduct]
+  type EmbeddedId = Entity.EmbeddedId[Id, CustomProduct]
 
   // --[ Objects ]-----------------------------------------------------
   object Id extends Entity.Id[Long]

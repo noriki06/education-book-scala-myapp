@@ -8,17 +8,15 @@
 package edu.customer.model
 
 import ixias.core.model.*
+
 import edu.common.model.StampCard
 
 /**
  * CustomerStampCard: one card a member is filling.
  *
- * The `Customer` prefix is redundant with the package and kept anyway: without
- * it this would be `StampCard`, colliding with the ledger it points at.
- *
- * [[StampCard]] is head office's ledger — the rule, the target, the period.
- * This is one member's card issued under it. `cardId` names the ledger without
- * repeating what the type says, as `menuId` does for `SalesTemplateMenu.Id`.
+ * The package repeats the prefix, and the prefix stays: without it the short
+ * name is [[StampCard]], which is head office's ledger — the rule, the target,
+ * the period. This is one member's card issued under it.
  *
  * A card is exchanged and then finished — the next stamp starts a new card,
  * exactly as with a paper one. That is what keeps "the ten already spent" and

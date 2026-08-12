@@ -14,9 +14,9 @@ import edu.common.model.{ Coupon, CouponOffer, StampCard }
 /**
  * CustomerCoupon: one coupon a member is holding.
  *
- * The `Customer` prefix is redundant with the package and kept anyway: without
- * it this would be `Coupon`, colliding with the master it points at, and every
- * file touching both would have to qualify one of them.
+ * The package repeats the prefix, and the prefix stays: without it the short
+ * name is [[Coupon]], which head office already owns. A prefix is dropped
+ * because the short name is free, not because the package makes it redundant.
  *
  * `couponId` says what the coupon is. The two after it say where it came from,
  * and **only one of them is ever set**:
@@ -42,16 +42,16 @@ import edu.common.model.{ Coupon, CouponOffer, StampCard }
  */
 import CustomerCoupon.*
 case class CustomerCoupon(
-  id:            Option[Id],              // 保有Id
-  customerId:    Customer.Id,             // 顧客Id
-  couponId:      Coupon.Id,               // クーポンId
-  couponOfferId: Option[CouponOffer.Id],  // 配布Id（配布から取得したとき）
-  stampCardId:   Option[StampCard.Id],    // 台帳Id（スタンプ引換のとき）
-  expiredAt:     Option[LocalDateTime],   // 有効期限。取得時に確定。None は無期限
-  state:         Status,                  // 保有状態
-  usedAt:        Option[LocalDateTime],   // 使用日時。IS_USED で埋まる
-  updatedAt:     LocalDateTime = Now,     // データ更新日
-  createdAt:     LocalDateTime = Now      // データ作成日
+  id:            Option[Id],             // 保有Id
+  customerId:    Customer.Id,            // 顧客Id
+  couponId:      Coupon.Id,              // クーポンId
+  couponOfferId: Option[CouponOffer.Id], // 配布Id（配布から取得したとき）
+  stampCardId:   Option[StampCard.Id],   // 台帳Id（スタンプ引換のとき）
+  expiredAt:     Option[LocalDateTime],  // 有効期限。取得時に確定。None は無期限
+  state:         Status,                 // 保有状態
+  usedAt:        Option[LocalDateTime],  // 使用日時。IS_USED で埋まる
+  updatedAt:     LocalDateTime = Now,    // データ更新日
+  createdAt:     LocalDateTime = Now     // データ作成日
 ) extends EntityModel[Id]:
 
   /** その時点で使えるか。失効は状態ではなく日付で判定する */

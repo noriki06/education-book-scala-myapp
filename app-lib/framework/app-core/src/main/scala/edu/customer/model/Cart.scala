@@ -100,9 +100,9 @@ object Cart:
    * [[edu.shop.model.PaymentDiscount]] に記録される。
    */
   case class UseCoupon(
-    couponId:         Coupon.Id,                     // クーポンId
-    couponOfferId:    Option[CouponOffer.Id],        // クーポン: 配布Id（直接消費のとき）
-    customerCouponId: Option[CustomerCoupon.Id]      // 顧客: 保有クーポンId（付与型のとき）
+    couponId:         Coupon.Id,                 // クーポンId
+    couponOfferId:    Option[CouponOffer.Id],    // クーポン: 配布Id（直接消費のとき）
+    customerCouponId: Option[CustomerCoupon.Id]  // 顧客: 保有クーポンId（付与型のとき）
   )
 
   // --[ Value Objects ]-----------------------------------------------

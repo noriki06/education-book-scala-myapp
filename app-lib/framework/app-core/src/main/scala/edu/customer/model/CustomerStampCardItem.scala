@@ -8,6 +8,7 @@
 package edu.customer.model
 
 import ixias.core.model.*
+
 import edu.common.model.StampCard
 import edu.shop.model.Payment
 
@@ -21,6 +22,10 @@ import edu.shop.model.Payment
  * order line carries `shopId` beside `orderId`. Counting a campaign's stamps
  * then needs no join, and the pair reads as one rule: `customer*` is the one
  * somebody is holding, as with `customerCouponId`.
+ *
+ * This file is why the two cards keep different names. Drop the prefix and
+ * both fields below want to be called `cardId`, with nothing but a comment
+ * telling the ledger from the card in someone's hand.
  *
  * Each row records the payment that earned it, so "when and on which bill was
  * this stamp given" can be answered later. That is also the guard against
