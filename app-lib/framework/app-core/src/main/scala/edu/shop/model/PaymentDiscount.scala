@@ -24,6 +24,7 @@ import edu.customer.model.CustomerCoupon
 import PaymentDiscount.*
 case class PaymentDiscount(
   id:                 Option[Id],                 // 管理Id
+  shopId:             Shop.Id,                    // 店舗Id
   paymentId:          Payment.Id,                 // 決済Id
   couponId:           Coupon.Id,                  // クーポンId
   couponOfferId:      Option[CouponOffer.Id],     // クーポン: 配布Id。スタンプ引換なら None

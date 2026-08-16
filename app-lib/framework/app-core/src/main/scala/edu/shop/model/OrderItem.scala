@@ -14,6 +14,9 @@ import edu.customer.model.Customer
 /**
  * 注文明細: 確定した注文 1 行。
  * 商品への参照と個数だけを持つ。
+ *
+ * 受渡しが終わるまでの作業用データなので、金額は持たない。
+ * 何をいくらで売ったかは [[PaymentItem]] に残す。
  */
 import OrderItem.*
 case class OrderItem(
