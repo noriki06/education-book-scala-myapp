@@ -20,6 +20,11 @@ import edu.common.model.Product
  * 本部が商品マスタ（[[Product]]）の名前や価格を後から変えても、
  * 過去の会計はこの行だけで再現できる。
  *
+ * 本部商品と店舗独自商品のどちらも売れるため参照を 2 つ持ち、
+ * どちらか一方だけが Some になる
+ *  - `productId`       … 本部商品（[[Product]]）
+ *  - `productCustomId` … 店舗独自商品（[[CustomProduct]]）
+ *
  * {{{
  *   productUnitPrice * productNum = productSubTotal
  *   billSubTotal = SUM(productSubTotal)
@@ -27,17 +32,18 @@ import edu.common.model.Product
  */
 import PaymentItem.*
 case class PaymentItem(
-  id:               Option[Id],          // 管理Id
-  shopId:           Shop.Id,             // 店舗Id
-  paymentId:        Payment.Id,          // 決済Id
-  productId:        Product.Id,          // 商品: 商品Id
-  productName:      String,              // 商品: 商品名
-  productCategory:  Product.Category,    // 商品: カテゴリ
-  productNum:       Int,                 // 商品: 個数
-  productUnitPrice: Int,                 // 商品: 単品あたり (円)
-  productSubTotal:  Int,                 // 商品: 小計 (円)
-  updatedAt:        LocalDateTime = Now, // データ更新日
-  createdAt:        LocalDateTime = Now  // データ作成日
+  id:               Option[Id],               // 管理Id
+  shopId:           Shop.Id,                  // 店舗Id
+  paymentId:        Payment.Id,               // 決済Id
+  productId:        Option[Product.Id],       // 商品: 本部商品Id
+  productCustomId:  Option[CustomProduct.Id], // 商品: 店舗独自商品Id
+  productName:      String,                   // 商品: 商品名
+  productCategory:  Product.Category,         // 商品: カテゴリ
+  productNum:       Int,                      // 商品: 個数
+  productUnitPrice: Int,                      // 商品: 単品あたり (円)
+  productSubTotal:  Int,                      // 商品: 小計 (円)
+  updatedAt:        LocalDateTime = Now,      // データ更新日
+  createdAt:        LocalDateTime = Now       // データ作成日
 ) extends EntityModel[Id]
 
 /**

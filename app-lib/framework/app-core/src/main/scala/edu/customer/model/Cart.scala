@@ -10,7 +10,7 @@ package edu.customer.model
 import ixias.core.model.*
 import ixias.core.model.value.Token
 
-import edu.shop.model.Shop
+import edu.shop.model.{ Shop, CustomProduct }
 import edu.common.model.{ Product, Coupon, CouponOffer }
 
 /**
@@ -49,10 +49,16 @@ object Cart:
   // --[ Value Objects ]-----------------------------------------------
   /**
    * カートに入れた商品
+   *
+   * 本部商品と店舗独自商品のどちらも入るため参照を 2 つ持ち、
+   * どちらか一方だけが Some になる
+   *  - `productId`       … 本部商品（[[Product]]）
+   *  - `productCustomId` … 店舗独自商品（[[CustomProduct]]）
    */
   case class BuyItem(
-    productId:  Product.Id,  // 商品Id
-    productNum: Int,         // 注文数
+    productId:       Option[Product.Id],        // 商品: 本部商品Id
+    productCustomId: Option[CustomProduct.Id],  // 商品: 店舗独自商品Id
+    productNum:      Int                        // 注文数
   )
 
   /**
@@ -60,12 +66,12 @@ object Cart:
    *
    * `couponId` は割引の内容。
    *  - `couponOfferId`    … 直接消費型（[[CouponOffer.IssueType.IS_DIRECT]]）
-   *  - `customerCouponId` … 付与型。会員が保有する 1 枚を消費する
+   *  - `couponCustomerId` … 付与型。会員が保有する 1 枚を消費する
    */
   case class UseCoupon(
     couponId:         Coupon.Id,                 // クーポンId
     couponOfferId:    Option[CouponOffer.Id],    // クーポン: 配布Id（直接消費のとき）
-    customerCouponId: Option[CustomerCoupon.Id]  // 顧客: 保有クーポンId（付与型のとき）
+    couponCustomerId: Option[CustomerCoupon.Id]  // 顧客: 保有クーポンId（付与型のとき）
   )
 
   /**

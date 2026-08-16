@@ -17,17 +17,23 @@ import edu.customer.model.Customer
  *
  * 受渡しが終わるまでの作業用データなので、金額は持たない。
  * 何をいくらで売ったかは [[PaymentItem]] に残す。
+ *
+ * 本部商品と店舗独自商品のどちらも注文できるため参照を 2 つ持ち、
+ * どちらか一方だけが Some になる
+ *  - `productId`       … 本部商品（[[Product]]）
+ *  - `productCustomId` … 店舗独自商品（[[CustomProduct]]）
  */
 import OrderItem.*
 case class OrderItem(
-  id:         Option[Id],          // 管理Id
-  shopId:     Shop.Id,             // 店舗Id
-  orderId:    Order.Id,            // オーダーId
-  customerId: Customer.Id,         // 顧客Id
-  productId:  Product.Id,          // 商品Id
-  productNum: Int,                 // 注文数
-  updatedAt:  LocalDateTime = Now, // データ更新日
-  createdAt:  LocalDateTime = Now  // データ作成日
+  id:              Option[Id],               // 管理Id
+  shopId:          Shop.Id,                  // 店舗Id
+  orderId:         Order.Id,                 // オーダーId
+  customerId:      Customer.Id,              // 顧客Id
+  productId:       Option[Product.Id],       // 商品: 本部商品Id
+  productCustomId: Option[CustomProduct.Id], // 商品: 店舗独自商品Id
+  productNum:      Int,                      // 注文数
+  updatedAt:       LocalDateTime = Now,      // データ更新日
+  createdAt:       LocalDateTime = Now       // データ作成日
 ) extends EntityModel[Id]
 
 /**
