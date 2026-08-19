@@ -1,0 +1,56 @@
+/*
+ * Copyright IxiaS, Inc. All Rights Reserved.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code.
+ */
+
+package edu.shop.model
+
+import ixias.core.model.*
+import edu.common.model.{ Coupon, CouponOffer }
+import edu.customer.model.CustomerCoupon
+
+/**
+ * 決済割引:
+ * 会計で実際に適用した割引 1 行。
+ * `coupon*` は割引の出どころ、`discount*` は実際に引いた内容。
+ *
+ * 割引の当たり先は商品ではなく決済明細（[[PaymentItem]]）1 行。
+ * 本部商品か店舗独自商品かは明細が持っているので、こちらは区別しない。
+ *
+ * {{{
+ *   discountProductNum <= PaymentItem.productNum
+ *   discountUnitValue * discountProductNum = discountSubTotal
+ *   billDiscountTotal = SUM(discountSubTotal)
+ * }}}
+ */
+import PaymentDiscount.*
+case class PaymentDiscount(
+  id:                 Option[Id],                 // 管理Id
+  shopId:             Shop.Id,                    // 店舗Id
+  paymentId:          Payment.Id,                 // 決済Id
+  couponId:           Coupon.Id,                  // クーポンId
+  couponOfferId:      Option[CouponOffer.Id],     // クーポン: 配布Id。スタンプ引換なら None
+  couponCustomerId:   Option[CustomerCoupon.Id],  // 顧客: 所持クーポンId
+  discountType:       Coupon.DiscountType,        // 割引: 種別
+  discountItemId:     PaymentItem.Id,             // 割引: 対象の決済明細Id
+  discountProductNum: Int,                        // 割引: 対象商品個数
+  discountUnitValue:  Int,                        // 割引: 単品あたり (円)
+  discountSubTotal:   Int,                        // 割引: 小計 (円)
+  updatedAt:          LocalDateTime = Now,        // データ更新日
+  createdAt:          LocalDateTime = Now         // データ作成日
+) extends EntityModel[Id]
+
+/**
+ * 決済割引: 付随する型と処理の定義
+ */
+object PaymentDiscount:
+
+  // --[ Type Aliases ]------------------------------------------------
+  type Id         = Id.Repr
+  type WithNoId   = Entity.WithNoId[Id, PaymentDiscount]
+  type EmbeddedId = Entity.EmbeddedId[Id, PaymentDiscount]
+
+  // --[ Opaque Values ]-----------------------------------------------
+  object Id extends Entity.Id[Long]

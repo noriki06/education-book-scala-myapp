@@ -16,5 +16,5 @@ import javax.inject.{ Inject, Singleton }
  */
 @Singleton
 class AppRepositoryFacade @Inject() (
-  val udb: edu.udb.persistence.RepositoryFacade,
+  val customer: edu.customer.persistence.RepositoryFacade,
 )
