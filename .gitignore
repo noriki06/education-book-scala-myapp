@@ -10,6 +10,7 @@ logs
 
 # Node / SvelteKit
 node_modules
+.pnpm-store
 dist
 .vite
 .svelte-kit
