@@ -199,6 +199,7 @@ header .keys { color:var(--muted); font-size:11px; margin-left:auto; }
   border:1px solid var(--line); border-radius:999px;
   background:var(--bg); color:var(--fg); }
 .ftabs button.active { background:var(--cur); border-color:var(--cur); color:#1c1917; }
+.ftabs button.nochange { opacity:.5; }
 details.others { position:relative; }
 details.others summary { list-style:none; display:inline-block; }
 details.others summary::-webkit-details-marker { display:none; }
@@ -263,18 +264,19 @@ counter.textContent=hunks.length? '0 / '+hunks.length : '差分なし';
 
 
 def render_page(title, sections, infos):
-    """infos: [(sec_id, path, is_primary)]"""
-    primaries = [(i, p) for i, p, pr in infos if pr]
-    others = [(i, p) for i, p, pr in infos if not pr]
+    """infos: [(sec_id, path, is_primary, nochange)]"""
+    primaries = [(i, p, nc) for i, p, pr, nc in infos if pr]
+    others = [(i, p, nc) for i, p, pr, nc in infos if not pr]
     if not primaries:                     # 主要パスに1件も無ければ全部をタブに
         primaries, others = others, []
     tabs = "".join(
-        '<button data-f="%s" title="%s">%s</button>'
-        % (i, html.escape(p), html.escape(os.path.basename(p)))
-        for i, p in primaries)
+        '<button data-f="%s" class="%s" title="%s%s">%s</button>'
+        % (i, "nochange" if nc else "", html.escape(p),
+           "（変更なし）" if nc else "", html.escape(os.path.basename(p)))
+        for i, p, nc in primaries)
     if others:
         items = "".join('<li data-f="%s">%s</li>' % (i, html.escape(p))
-                        for i, p in others)
+                        for i, p, nc in others)
         tabs += ('<details class="others"><summary>その他 (%d) ▾</summary>'
                  '<ul>%s</ul></details>' % (len(others), items))
     return ("<!doctype html><meta charset='utf-8'>"
@@ -307,6 +309,15 @@ def main():
             sys.exit("git リポジトリではありません（--files で2ファイル比較は可能）")
         os.chdir(root)
         files = changed_files(args.rev, args.paths)
+        # primary 配下は変更が無くても常に載せる（タブ常設・中身も読める）
+        prefixes_pin = [p for p in args.primary.split(",") if p]
+        pinned = []
+        for pre in prefixes_pin:
+            pinned += [l for l in run(["git", "ls-files", "--", pre]).stdout.decode().split("\n") if l.strip()]
+            pinned += [l for l in run(["git", "ls-files", "--others", "--exclude-standard", "--", pre]).stdout.decode().split("\n") if l.strip()]
+        for f in pinned:
+            if f not in files:
+                files.append(f)
         if not files:
             sys.exit("差分はありません（%s ⇄ 作業ツリー）" % args.rev)
         for f in files:
@@ -317,21 +328,22 @@ def main():
         title = "mdiff: %s ⇄ working tree" % args.rev
 
     prefixes = [p for p in args.primary.split(",") if p]
-    kept = []  # (name, rows, primary)
+    kept = []  # (name, rows, primary, nochange)
     for name, old, new in pairs:
         rows = build_rows(old, new)
-        if all(r[0] == "eq" for r in rows):
-            continue
         primary = any(name.startswith(p) for p in prefixes)
-        kept.append((name, rows, primary))
+        nochange = all(r[0] == "eq" for r in rows)
+        if nochange and not primary:
+            continue
+        kept.append((name, rows, primary, nochange))
     if not kept:
         sys.exit("差分はありません")
     kept.sort(key=lambda t: (not t[2], t[0]))   # 主要ファイルを先頭に・名前順
 
     sections, infos = [], []
-    for idx, (name, rows, primary) in enumerate(kept):
+    for idx, (name, rows, primary, nochange) in enumerate(kept):
         sections.append(render_file(name, rows, idx))
-        infos.append(("f%d" % idx, name, primary))
+        infos.append(("f%d" % idx, name, primary, nochange))
 
     out = args.out or os.path.join(tempfile.mkdtemp(prefix="mdiff-"), "diff.html")
     with open(out, "w", encoding="utf-8") as fh:
