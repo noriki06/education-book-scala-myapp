@@ -68,7 +68,7 @@
   <text x="714" y="465" font-size="9" fill="#fef3c7">Place</text>
   <text x="988" y="452" text-anchor="end" font-size="10" fill="#ffffff">place</text>
   <text x="714" y="488" font-size="11" fill="#334155">Google の店への参照（手動登録なら無し）</text>
-  <text x="714" y="510" font-size="11" fill="#334155">店名（Google からの写し / 手動入力）</text>
+  <text x="714" y="510" font-size="11" fill="#334155">店名（会員が付けた呼び名・誰でも直せる）</text>
 
   <!-- ================= PlaceReview ================= -->
   <rect x="390" y="470" width="250" height="140" rx="6" fill="#fffbeb" stroke="#d97706"/>
