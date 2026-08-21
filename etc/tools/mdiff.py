@@ -316,7 +316,7 @@ def main():
             pinned += [l for l in run(["git", "ls-files", "--", pre]).stdout.decode().split("\n") if l.strip()]
             pinned += [l for l in run(["git", "ls-files", "--others", "--exclude-standard", "--", pre]).stdout.decode().split("\n") if l.strip()]
         for f in pinned:
-            if f not in files:
+            if f not in files and f.endswith(".md"):
                 files.append(f)
         if not files:
             sys.exit("差分はありません（%s ⇄ 作業ツリー）" % args.rev)

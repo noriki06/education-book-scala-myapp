@@ -29,71 +29,10 @@
 
 まず、データの繋がりだけを確認します。何が必須か・日時をどう持つかは、この図では決めません。
 
-```mermaid
-erDiagram
-    Member ||--|| MemberPassword : "1:1"
-    Member ||--o{ MemberSession  : "1:*"
-    Member ||--o{ Event          : "立案する（表示しない）"
-    Member ||--o{ EventEntry     : "押した分だけ"
-    Event  ||--o{ EventEntry     : "人数ぶん集まる"
-    Place  |o--o{ Event          : "任意で選ぶ（0..1）"
-    Member ||--o{ PlaceReview    : "行くたび書ける"
-    Place  ||--o{ PlaceReview    : "1:*"
-
-    Member {
-        Long   id     PK "会員ID"
-        String uuid      "公開用UUID（連番を晒さない）"
-        String email     "メール（ログインID・一意）"
-        String name      "表示名（開示・レビューに出る）"
-        Status state     "有効 / 無効"
-    }
-    MemberPassword {
-        Long   uid  PK "会員ID（1人に1行）"
-        String hash    "パスワードハッシュ"
-    }
-    MemberSession {
-        Long     uid       FK "会員ID"
-        String   token        "トークン（一意）"
-        DateTime expiredAt    "有効期限"
-    }
-    Event {
-        Long     id             PK "イベントID"
-        String   code              "公開用ID（URLに使う）"
-        Long     memberId       FK "立案者（誰にも表示しない）"
-        String   title             "内容"
-        DateTime meetAt            "集合日時"
-        DateTime closeAt           "締切（集合日時まで）"
-        Short    capacity          "成立人数（立案者込み・2以上）"
-        Long     placeId        FK "店（任意）"
-        String   slackChannelId    "投稿先チャンネル"
-        String   slackMessageId    "投稿の記録（投稿前は無し）"
-        DateTime confirmedAt       "成立日時（成立前は無し）"
-        Status   state             "募集中/成立/終了/不成立/取消"
-    }
-    EventEntry {
-        Long id       PK "参加ID"
-        Long eventId  FK "どのイベントか"
-        Long memberId FK "誰が押したか（成立まで非表示）"
-    }
-    Place {
-        Long   id            PK "店ID"
-        String googlePlaceId    "Googleの店への参照（手動登録なら無し）"
-        String name             "店名（Googleからの写し / 手動入力）"
-    }
-    PlaceReview {
-        Long   id       PK "レビューID"
-        Long   placeId  FK "どの店か"
-        Long   memberId FK "書いた人（実名で出る）"
-        Short  star        "星（1〜5）"
-        String comment     "一言（時間帯・行列もここに書く）"
-    }
-```
-
-この図で確認するのは「どこに何があって、いくつ繋がるか」だけです。
+![匿名イベントアプリの ER 図。左に会員（Member）があり、会員 ID・公開用 UUID・メール・表示名・状態を持つ。その下に認証情報（MemberPassword）が 1 対 1、セッション（MemberSession）が 1 対多で繋がる。中央の参加（EventEntry）はイベント ID と会員 ID（成立まで誰にも見えない）を持ち、イベント × 会員の組で一意。会員とは 1 対多、右のイベント（Event）とは多対 1。イベントは公開用 ID・立案者の会員 ID（誰にも表示しない）・内容・集合日時・締切・成立人数・店 ID（任意）・投稿先チャンネル・投稿の記録・成立日時・状態を持つ。右下の店（Place）は Google の店への参照（手動登録なら無し）と店名の写しを持ち、イベントから点線（0..1・店を選んだときだけ）で結ばれる。中央下のレビュー（PlaceReview）は店 ID・会員 ID（実名で出る）・星・一言を持ち、会員と店それぞれに 1 対多で繋がる。注記: この図で確認するのは「どこに何があって、いくつ繋がるか」だけ。点線はコンテキストをまたぐ ID 参照（一方向）。updatedAt / createdAt は省略](./img/er.svg)
 
 - コンテキストをまたぐ参照は **ID だけ・一方向**（event → member、event → place、place → member）。place と member の世界はイベントを知らない
 - `EventEntry` は会員とイベントの交差。**(eventId, memberId) の組で一意**
-- `updatedAt` / `createdAt` は全エンティティが持つので図からは省いた
 
 ## EntityModel
 
