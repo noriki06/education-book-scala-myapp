@@ -177,9 +177,13 @@ CSS = """
 :root { --bg:#fff; --fg:#24292f; --muted:#6e7781; --line:#d8dee4;
   --del-bg:#ffebe9; --del-hl:#ffb3ad; --ins-bg:#e6ffec; --ins-hl:#9ff0b5;
   --fold:#f6f8fa; --head:#f6f8fa; --cur:#f2cc60; }
-@media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --fg:#e6edf3;
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0d1117; --fg:#e6edf3;
   --muted:#8b949e; --line:#30363d; --del-bg:#3c1618; --del-hl:#8b2c2c;
   --ins-bg:#12261e; --ins-hl:#1f6f3f; --fold:#161b22; --head:#161b22; --cur:#6b5618; } }
+:root[data-theme="dark"] { --bg:#0d1117; --fg:#e6edf3;
+  --muted:#8b949e; --line:#30363d; --del-bg:#3c1618; --del-hl:#8b2c2c;
+  --ins-bg:#12261e; --ins-hl:#1f6f3f; --fold:#161b22; --head:#161b22; --cur:#6b5618; }
+body { background: var(--bg); }
 * { box-sizing:border-box; }
 body { margin:0; background:var(--bg); color:var(--fg);
   font:13px/1.7 "SFMono-Regular",Consolas,"BIZ UDGothic","Hiragino Kaku Gothic ProN",Meiryo,monospace; }
