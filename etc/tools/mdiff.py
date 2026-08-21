@@ -123,7 +123,7 @@ def render_file(path, rows, idx):
     out = []
     out.append('<section class="file" id="f%d">' % idx)
     out.append('<h2>%s</h2>' % html.escape(path))
-    out.append('<table>')
+    out.append('<table><colgroup><col class="c-ln"><col class="c-code"><col class="c-ln"><col class="c-code"></colgroup>')
     i = 0
     fold_id = 0
     first_of_block = True
@@ -213,9 +213,11 @@ details.others li:hover { background:var(--fold); }
 section.file { margin:1rem auto 2.5rem; max-width:1400px; padding:0 .8rem; }
 h2 { font-size:14px; border-bottom:2px solid var(--fg); padding-bottom:.3rem; }
 table { border-collapse:collapse; width:100%; table-layout:fixed; }
-td.ln { width:3.4em; text-align:right; padding:0 .5em; color:var(--muted);
+col.c-ln { width:3.2em; }
+col.c-code { width:calc(50% - 3.2em); }
+td.ln { text-align:right; padding:0 .4em; color:var(--muted);
   user-select:none; vertical-align:top; border-right:1px solid var(--line); }
-td.code { width:calc(50% - 3.4em); padding:0 .6em; white-space:pre-wrap;
+td.code { padding:0 .6em; white-space:pre-wrap;
   overflow-wrap:anywhere; vertical-align:top; }
 tr.del td.old, tr.chg td.old { background:var(--del-bg); }
 tr.ins td.new, tr.chg td.new { background:var(--ins-bg); }
