@@ -107,6 +107,6 @@
   <!-- ================= note ================= -->
   <rect x="40" y="640" width="960" height="62" rx="8" fill="#fffbeb" stroke="#d97706"/>
   <text x="58" y="661" font-size="11" font-weight="bold" fill="#92400e">この図で確認するのは「どこに何があって、いくつ繋がるか」だけです</text>
-  <text x="58" y="678" font-size="11" fill="#92400e">必須か任意か・日時の持ち方は、このあとの EntityModel で定義します。点線はコンテキストをまたぐ ID 参照（一方向）。イベントは店を知らず、place と member の世界もイベントを知らない。</text>
-  <text x="58" y="694" font-size="11" fill="#92400e">updatedAt / createdAt は全エンティティが持つため省略しています。</text>
+  <text x="58" y="678" font-size="11" fill="#92400e">必須か任意か・日時の持ち方は、このあとの EntityModel で定義します。点線は、関連線として描いていない ID 参照（立案者）。EventEntry・PlaceReview の会員 ID も同様にコンテキストをまたぐ一方向参照。イベントは店を知らない。</text>
+  <text x="58" y="694" font-size="11" fill="#92400e">updatedAt / createdAt と各エンティティの管理 ID も省略（Member の会員 ID は参照される側として明示）。</text>
 </svg>
