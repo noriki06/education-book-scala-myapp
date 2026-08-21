@@ -43,7 +43,7 @@
 
 ![匿名イベントアプリの ER 図。左に会員（Member）があり、会員 ID・公開用 UUID・メール・表示名・状態を持つ。その下に認証情報（MemberPassword）が 1 対 1、セッション（MemberSession）が 1 対多で繋がる。中央の参加（EventEntry）はイベント ID と会員 ID（成立まで誰にも見えない）を持ち、イベント × 会員の組で一意。会員とは 1 対多、右のイベント（Event）とは多対 1。イベントは公開用 ID・立案者の会員 ID（誰にも表示しない）・内容・集合日時・締切・成立人数・店 ID（任意）・投稿先チャンネル・投稿の記録・成立日時・状態を持つ。右下の店（Place）は Google の店への参照（手動登録なら無し）と店名の写しを持ち、イベントから点線（0..1・店を選んだときだけ）で結ばれる。中央下のレビュー（PlaceReview）は店 ID・会員 ID（実名で出る）・星・一言を持ち、会員と店それぞれに 1 対多で繋がる。注記: この図で確認するのは「どこに何があって、いくつ繋がるか」だけ。点線はコンテキストをまたぐ ID 参照（一方向）。updatedAt / createdAt は省略](./img/er.svg)
 
-- コンテキストをまたぐ参照は **ID だけ・一方向**（event → member、event → place、place → member）。place と member の世界はイベントを知らない
+- コンテキストをまたぐ参照は **ID だけ・一方向**（event → member、place → member）。**イベントは店を知らず**、place と member の世界もイベントを知らない
 - `EventEntry` は会員とイベントの交差。**(eventId, memberId) の組で一意**
 
 ## EntityModel
@@ -120,10 +120,9 @@ case class Event(
   code:           Code,                            // 公開用 ID（URL に使う。連番を晒さない）
   memberId:       Member.Id,                       // 立案者（誰にも表示しない）
   title:          String,                          // 内容（「今日ランチ行きたい」）
-  meetAt:         LocalDateTime,                   // 集合日時
-  closeAt:        LocalDateTime,                   // 締切（既定＝集合日時。closeAt ≦ meetAt）
-  capacity:       Short,                           // 成立人数（立案者込み。2 以上）
-  placeId:        Option[Place.Id],                // 店（任意。選ばないことのほうが多い）
+  startAt:        LocalDateTime,                   // 集合日時（イベントの始まり。過ぎたら終了）
+  closeAt:        LocalDateTime,                   // 締切（既定＝集合日時。closeAt ≦ startAt）
+  minEntries:     Short,                           // 成立人数（立案者込み・2 以上。達したら成立）
   slackChannelId: String,                          // 投稿先チャンネル（立案時に選ぶ）
   slackMessageId: Option[String],                  // bot 投稿の記録（投稿前は None）
   confirmedAt:    Option[LocalDateTime],           // 成立した日時（成立前は None）
@@ -157,14 +156,14 @@ object Event:
 - 立案者の匿名はデータでは守らない。`memberId` は普通に持ち、**表示しない**だけ（アクセス境界の話）
 
 **型では守れない決めごと**
-- `closeAt ≦ meetAt`。過去の `meetAt` では作れない
-- `capacity` は 2 以上
+- `closeAt ≦ startAt`。過去の `startAt` では作れない
+- `minEntries` は 2 以上
 - `state` と `confirmedAt` は連動する: `IS_CONFIRMED`・`IS_FINISHED` なら必ず `Some`、`IS_OPEN`・`IS_FAILED` なら必ず `None`
 - 状態遷移は `IS_OPEN → IS_CONFIRMED → IS_FINISHED` が本線。`IS_OPEN → IS_FAILED`（締切）、`IS_OPEN / IS_CONFIRMED → IS_CANCELED`（取り消し）。`IS_FINISHED` からはどこへも動かない
 
 **保存されるデータの例**
 
-| title | meetAt | closeAt | capacity | state | confirmedAt |
+| title | startAt | closeAt | minEntries | state | confirmedAt |
 |---|---|---|---|---|---|
 | 今日ラーメン行きたい | 8/21 12:00 | 8/21 12:00 | 4 | IS_CONFIRMED | 8/21 11:02 |
 | 金曜スマブラやろう | 8/22 19:00 | 8/22 18:00 | 6 | IS_OPEN | — |
@@ -283,9 +282,9 @@ object PlaceReview:
 
 ## エンティティをまたぐルール
 
-- **成立判定**: `Event` の参加数（`EventEntry` の行数）が `capacity` に達したら成立。立案者の 1 行を含めて数える
+- **成立判定**: `Event` の参加数（`EventEntry` の行数）が `minEntries` に達したら成立。立案者の 1 行を含めて数える
 - **進捗（2/4）・本人の履歴・店の平均点・提案 3 件は保存しない**。すべて都度計算する（提案＝社内レビューの高評価順、足りなければ Google の評価・近さで補完）
-- 参加・取り消し・あと乗りができるのは `meetAt` まで。締切（`closeAt`）を過ぎた `IS_OPEN` はバッチが `IS_FAILED` に、`meetAt` を過ぎた `IS_CONFIRMED` は `IS_FINISHED` にする
+- 参加・取り消し・あと乗りができるのは `startAt` まで。締切（`closeAt`）を過ぎた `IS_OPEN` はバッチが `IS_FAILED` に、`startAt` を過ぎた `IS_CONFIRMED` は `IS_FINISHED` にする
 
 ## 置き場所（コンテキスト）
 
@@ -303,6 +302,7 @@ object PlaceReview:
 - 登録制限（メールドメイン制限・招待制）
 - 通報・強制削除・管理者ロール・管理画面（設定は設定ファイル）
 - 参加者からの手動の店提案（提案はアプリの自動のみ）
+- 立案時に店を選ぶ機能（場所を伝えたいときはタイトルに書く → 論点5）
 - レビューとイベントの紐づけ
 - ユーザー個人の位置情報の利用
 - 集計・レポート機能
@@ -332,7 +332,7 @@ object PlaceReview:
 
 ### 論点3：成立人数と星を値オブジェクトにしない
 
-**判断:** `capacity: Short`（2 以上）と `star: Short`（1〜5）は素の型で持ち、検証はモデルを作るときに行う。
+**判断:** `minEntries: Short`（2 以上）と `star: Short`（1〜5）は素の型で持ち、検証はモデルを作るときに行う。
 
 どちらも使う場所が 1 か所で、型を作っても守れる範囲が広がらない（教材の `Money` / `Quantity` はコンテキスト横断で頻出だから型にした）。「増やしすぎない」に倒す。
 
@@ -347,3 +347,13 @@ Google Places の規約では place_id 以外のデータのキャッシュに�
 **代償:** 店名の写しも厳密には規約のキャッシュ期限の対象になり得る。社内利用の規模ではリスクは小さいと判断したが、公開サービス化するなら要再検討。
 
 **判断が変わる条件:** Google が規約を厳格化したとき、または公開サービス化するとき。名前も都度取得に倒し、`Place` は place_id と手動店名だけになる。
+
+### 論点5：イベントは場所を持たない
+
+**判断:** `Event` から店への参照（placeId）も、場所の自由記述も持たない。場所を伝えたいときはタイトルに書く（「今日ランチ@サイゼ」）。
+
+要求文には「店から場所を選んでもいい」とあったが、選ばないことのほうが多いと明記されており、店の「決定」も記録しないと確定済み。参照を持つと event → place の依存が 1 本増え、自由記述を持つと思いつきの雑な記入が溜まりやすい。イベントは「いつ・何人で」だけを持ち、店の世界（店リスト・レビュー・提案）とは完全に独立させる。
+
+**代償:** 立案時に登録済みの店を選んでレビューへ飛ぶ、という導線は作れない。
+
+**判断が変わる条件:** 「イベントから店のレビューを開きたい」という要望が実際に出たとき。そのときは placeId（参照）を足す——自由記述ではなく。
