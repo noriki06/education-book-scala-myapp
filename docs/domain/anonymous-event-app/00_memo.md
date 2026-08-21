@@ -1,4 +1,4 @@
-# 匿名イベント募集アプリ — 作業メモ（提出しない・随時追記）
+# 匿名イベントアプリ — 作業メモ（提出しない・随時追記）
 
 > 手順は [design_procedure.md](https://github.com/uekan-source/education-book-scala-app/blob/develop/docs/notes/design_procedure.md) に従う。**思考の過程と、途中の大事な判断はこのファイルに追記していく。** 教材テンプレ形式の思考過程は [02_analysis.md](./02_analysis.md)、確定した要件は [01_requirements.md](./01_requirements.md)。
 
