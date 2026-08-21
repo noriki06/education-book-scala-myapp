@@ -93,27 +93,59 @@ object Member:
 |---|---|---|
 | ohira@example.co.jp | 大平 | IS_ACTIVE |
 
-### `MemberPassword` — 認証情報 ／ `MemberSession` — セッション
+### `MemberPassword` — 認証情報
 
 ```scala
 case class MemberPassword(
-  uid:       Member.Id,                     // 会員 ID（1 会員に 1 行）
+  memberId:  Member.Id,                     // 会員 ID（1 会員に 1 行。これが鍵）
   hash:      String,                        // パスワードハッシュ
-  updatedAt: LocalDateTime = Now,           // データ更新日
-  createdAt: LocalDateTime = Now            // データ作成日
-) extends EntityModel[Member.Id]
-
-case class MemberSession(
-  uid:       Member.Id,                     // 会員 ID
-  token:     String,                        // セッショントークン（一意）
-  expiredAt: LocalDateTime,                 // 有効期限
   updatedAt: LocalDateTime = Now,           // データ更新日
   createdAt: LocalDateTime = Now            // データ作成日
 ) extends EntityModel[Member.Id]
 ```
 
+**ここで型が語っていること**
+- 自分の `Id` を持たない。鍵は `Member.Id` そのもの——**1 会員に 1 行**という多重度が型で決まる
+
 **型では守れない決めごと**
-- `MemberPassword` は会員と 1:1、`MemberSession` は 1:*。`token` は一意
+- 保存するのはハッシュだけ（平文・可逆な形は持たない）
+
+**保存されるデータの例**
+
+| memberId | hash |
+|---|---|
+| 10 | $pbkdf2$…（ハッシュ文字列） |
+
+### `MemberSession` — セッション
+
+```scala
+case class MemberSession(
+  id:        Option[Id],                    // 管理 ID（永続化前は None）
+  memberId:  Member.Id,                     // 会員 ID
+  token:     String,                        // セッショントークン（一意）
+  expiredAt: LocalDateTime,                 // 有効期限
+  updatedAt: LocalDateTime = Now,           // データ更新日
+  createdAt: LocalDateTime = Now            // データ作成日
+) extends EntityModel[Id]
+
+object MemberSession:
+
+  /** セッションの識別子 */
+  type   Id = Id.Repr
+  object Id extends Entity.Id[Long]
+```
+
+**ここで型が語っていること**
+- 自分の `Id` を持つ＝会員と **1:***。スマホと PC で同時にログインできる
+
+**型では守れない決めごと**
+- `token` は一意。ログアウトは行の削除（即時失効）。`expiredAt` を過ぎたトークンは無効
+
+**保存されるデータの例**
+
+| memberId | token | expiredAt |
+|---|---|---|
+| 10 | a1b2…（ランダム文字列） | 8/28 12:00 |
 
 ### `Event` — イベント
 
