@@ -97,17 +97,25 @@ object Member:
 
 ```scala
 case class MemberPassword(
-  memberId:  Member.Id,                     // 会員 ID（1 会員に 1 行。これが鍵）
+  id:        Option[Id],                    // 管理 ID（永続化前は None）
+  memberId:  Member.Id,                     // 会員 ID（1 会員に 1 行）
   hash:      String,                        // パスワードハッシュ
   updatedAt: LocalDateTime = Now,           // データ更新日
   createdAt: LocalDateTime = Now            // データ作成日
-) extends EntityModel[Member.Id]
+) extends EntityModel[Id]
+
+object MemberPassword:
+
+  /** 認証情報の識別子 */
+  type   Id = Id.Repr
+  object Id extends Entity.Id[Long]
 ```
 
 **ここで型が語っていること**
-- 自分の `Id` を持たない。鍵は `Member.Id` そのもの——**1 会員に 1 行**という多重度が型で決まる
+- 他のエンティティと同じく自分の管理 `Id` を持つ（雛形の CustomerPassword と同じ形。ハッシュ化・照合の処理もコンパニオンが担う）
 
 **型では守れない決めごと**
+- `memberId` は一意——**1 会員に 1 行**
 - 保存するのはハッシュだけ（平文・可逆な形は持たない）
 
 **保存されるデータの例**
