@@ -12,7 +12,7 @@
   <text x="54" y="122" font-size="11" fill="#334155">会員 ID</text>
   <text x="54" y="144" font-size="11" fill="#334155">公開用 UUID（連番を晒さない）</text>
   <text x="54" y="166" font-size="11" fill="#334155">メール（ログイン ID・一意）</text>
-  <text x="54" y="188" font-size="11" fill="#334155">表示名（開示・レビューに出る）</text>
+  <text x="54" y="188" font-size="11" fill="#334155">表示名・読み（開示に出る/読みで並べる）</text>
   <text x="54" y="210" font-size="11" fill="#334155">状態（有効 / 無効）</text>
 
   <!-- ================= MemberPassword ================= -->
@@ -32,7 +32,7 @@
   <text x="288" y="456" text-anchor="end" font-size="10" fill="#ffffff">member</text>
   <text x="54" y="492" font-size="11" fill="#334155">会員 ID</text>
   <text x="54" y="514" font-size="11" fill="#334155">トークン（一意）</text>
-  <text x="54" y="536" font-size="11" fill="#334155">有効期限</text>
+  <text x="54" y="536" font-size="11" fill="#334155">有効期限（既定 30 日）</text>
 
   <!-- ================= EventEntry ================= -->
   <rect x="390" y="120" width="250" height="118" rx="6" fill="#f0fdf4" stroke="#16a34a"/>
