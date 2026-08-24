@@ -130,8 +130,8 @@ object MemberPassword:
 case class MemberSession(
   id:        Option[Id],                    // 管理 ID（永続化前は None）
   memberId:  Member.Id,                     // 会員 ID
-  token:     String,                        // セッショントークン（一意）
-  expiredAt: LocalDateTime,                 // 有効期限
+  token:     Token,                         // セッショントークン（一意・未署名。ixias の Token 型）
+  expiresAt: LocalDateTime = Now.plusDays(30), // 有効期限
   updatedAt: LocalDateTime = Now,           // データ更新日
   createdAt: LocalDateTime = Now            // データ作成日
 ) extends EntityModel[Id]
@@ -147,13 +147,14 @@ object MemberSession:
 - 自分の `Id` を持つ＝会員と **1:***。スマホと PC で同時にログインできる
 
 **型では守れない決めごと**
-- `token` は一意。ログアウトは行の削除（即時失効）。`expiredAt` を過ぎたトークンは無効
+- `token` は一意。ログアウトは行の削除（即時失効）。`expiresAt` を過ぎたトークンは無効
+- 雛形の CustomerSession にある `state`（IS_CLOSED / IS_ACTIVE）は持たない。ログアウトが行の削除である以上「有効なセッション＝行が在る」の一義で足り、state を足すと同じ意味が 2 通りに書けてしまう（雛形でも IS_CLOSED は定義だけで読み書きする処理がない）。代償として流用時に列を 1 本落とす
 
 **保存されるデータの例**
 
-| memberId | token | expiredAt |
+| memberId | token | expiresAt |
 |---|---|---|
-| 10 | a1b2…（ランダム文字列） | 8/28 12:00 |
+| 10 | a1b2…（ランダム文字列） | 9/23 12:00 |
 
 ### `Event` — イベント
 
