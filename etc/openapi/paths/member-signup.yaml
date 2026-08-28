@@ -7,8 +7,8 @@
 
 summary: Sign up
 description: >-
-  Registers a user with email and password. The password is PBKDF2-hashed
-  into `udb_user_password`, kept in a separate table from the `udb_user`
+  Registers a member with email and password. The password is PBKDF2-hashed
+  into `member_password`, kept in a separate table from the `member`
   profile, and the raw value is never stored.
 
   A session is issued as part of the same request, so the response already
@@ -62,7 +62,7 @@ responses:
             id:
               type: integer
               format: int64
-              description: Management ID of the created user
+              description: Management ID of the created member
               examples:
                 - 1
   400:

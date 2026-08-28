@@ -12,7 +12,7 @@ import type { paths } from './schema';
  * Typed API client shared by every frontend app.
  *
  * `paths` comes from `schema.d.ts`, generated out of `etc/openapi` by
- * `./etc/openapi/build.sh`, so `api.GET('/user/api/me')` knows its own
+ * `./etc/openapi/build.sh`, so `api.GET('/member/api/me')` knows its own
  * response shape and an unknown path is a compile error.
  *
  * Requests are same-origin: in development Vite proxies them to the Play

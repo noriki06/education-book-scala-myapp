@@ -43,7 +43,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/api/signup": {
+    "/member/api/signup": {
         parameters: {
             query?: never;
             header?: never;
@@ -54,7 +54,7 @@ export interface paths {
         put?: never;
         /**
          * Sign up
-         * @description Registers a user with email and password. The password is PBKDF2-hashed into `udb_user_password`, kept in a separate table from the `udb_user` profile, and the raw value is never stored.
+         * @description Registers a member with email and password. The password is PBKDF2-hashed into `member_password`, kept in a separate table from the `member` profile, and the raw value is never stored.
          *     A session is issued as part of the same request, so the response already carries the `session` cookie and the caller is logged in — no follow-up login round trip.
          *     `email` is trimmed and lower-cased before the uniqueness check.
          */
@@ -99,7 +99,7 @@ export interface paths {
                         "application/json": {
                             /**
                              * Format: int64
-                             * @description Management ID of the created user
+                             * @description Management ID of the created member
                              * @example 1
                              */
                             id: number;
@@ -117,7 +117,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/api/login": {
+    "/member/api/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -128,7 +128,7 @@ export interface paths {
         put?: never;
         /**
          * Log in
-         * @description Looks the user up by email and compares the supplied password against the stored PBKDF2 hash. On success a fresh session row is inserted and the `session` cookie is set.
+         * @description Looks the member up by email and compares the supplied password against the stored PBKDF2 hash. On success a fresh session row is inserted and the `session` cookie is set.
          *     An unknown email and a wrong password both return the same 401 with the same message, so the response cannot be used to probe which addresses are registered.
          */
         post: {
@@ -163,7 +163,7 @@ export interface paths {
                         "application/json": {
                             /**
                              * Format: int64
-                             * @description Management ID of the authenticated user
+                             * @description Management ID of the authenticated member
                              * @example 1
                              */
                             id: number;
@@ -181,7 +181,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/api/logout": {
+    "/member/api/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -192,7 +192,7 @@ export interface paths {
         put?: never;
         /**
          * Log out
-         * @description Deletes the `udb_user_session` row the cookie points at, then discards the cookie. Server side goes first, so the token is dead even for a client that keeps its copy.
+         * @description Deletes the `member_session` row the cookie points at, then discards the cookie. Server side goes first, so the token is dead even for a client that keeps its copy.
          *     Idempotent: a request with no cookie, or one whose signature no longer verifies, still returns 204 rather than an error — there is nothing to reveal and nothing left to do.
          */
         post: {
@@ -222,7 +222,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/api/me": {
+    "/member/api/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -231,8 +231,8 @@ export interface paths {
         };
         /**
          * Get my profile
-         * @description Resolves the logged-in user from the `session` cookie and returns the public profile. Authentication status is conveyed by the HTTP code (200 / 401), not a payload field.
-         *     The cookie's HMAC signature is verified before any query runs, so a tampered cookie is rejected without touching the database. A token whose `udb_user_session` row is gone — logged out, or never issued — is a 401 even when the signature still checks out, because the row is the source of truth.
+         * @description Resolves the logged-in member from the `session` cookie and returns the public profile. Authentication status is conveyed by the HTTP code (200 / 401), not a payload field.
+         *     The cookie's HMAC signature is verified before any query runs, so a tampered cookie is rejected without touching the database. A token whose `member_session` row is gone — logged out, or never issued — is a 401 even when the signature still checks out, because the row is the source of truth.
          */
         get: {
             parameters: {
@@ -243,7 +243,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Current authenticated user */
+                /** @description Current authenticated member */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -258,7 +258,7 @@ export interface paths {
                             id: number;
                             /**
                              * Format: uuid
-                             * @description Public identifier. Prefer this over `id` when exposing a user.
+                             * @description Public identifier. Prefer this over `id` when exposing a member.
                              * @example 6486431a-3cac-4ba2-b32d-e67b673b8f76
                              */
                             uuid: string;

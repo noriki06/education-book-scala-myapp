@@ -7,7 +7,7 @@
 
 summary: Log in
 description: >-
-  Looks the user up by email and compares the supplied password against the
+  Looks the member up by email and compares the supplied password against the
   stored PBKDF2 hash. On success a fresh session row is inserted and the
   `session` cookie is set.
 
@@ -51,7 +51,7 @@ responses:
             id:
               type: integer
               format: int64
-              description: Management ID of the authenticated user
+              description: Management ID of the authenticated member
               examples:
                 - 1
   400:

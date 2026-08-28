@@ -7,19 +7,19 @@
 
 import { api, request, requestVoid } from '@app/api';
 
-export type User = { id: number; uuid: string; name: string; email: string };
+export type Member = { id: number; uuid: string; name: string; email: string };
 
 export type AuthResult = { ok: true } | { ok: false; error: string };
 
 /**
- * The logged-in user, or null when not authenticated.
+ * The logged-in member, or null when not authenticated.
  *
  * A 401 is the normal "logged out" answer here rather than a failure, so it
  * collapses to null instead of surfacing a message.
  */
-export async function fetchMe(): Promise<User | null> {
+export async function fetchMe(): Promise<Member | null> {
   try {
-    const { data, response } = await api.GET('/user/api/me', {
+    const { data, response } = await api.GET('/member/api/me', {
       credentials: 'include',
     });
     if (!response.ok || !data) return null;
@@ -35,7 +35,7 @@ export async function fetchMe(): Promise<User | null> {
  */
 export async function signup(email: string, password: string, name: string): Promise<AuthResult> {
   return requestVoid(
-    api.POST('/user/api/signup', {
+    api.POST('/member/api/signup', {
       body:        { email, password, name },
       credentials: 'include',
     }),
@@ -49,7 +49,7 @@ export async function signup(email: string, password: string, name: string): Pro
  */
 export async function login(email: string, password: string): Promise<AuthResult> {
   return requestVoid(
-    api.POST('/user/api/login', {
+    api.POST('/member/api/login', {
       body:        { email, password },
       credentials: 'include',
     }),
@@ -63,7 +63,7 @@ export async function login(email: string, password: string): Promise<AuthResult
  */
 export async function logout(): Promise<AuthResult> {
   return requestVoid(
-    api.POST('/user/api/logout', { credentials: 'include' }),
+    api.POST('/member/api/logout', { credentials: 'include' }),
     'ログアウトに失敗しました',
   );
 }

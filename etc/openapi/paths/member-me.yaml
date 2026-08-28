@@ -7,18 +7,18 @@
 
 summary: Get my profile
 description: >-
-  Resolves the logged-in user from the `session` cookie and returns the
+  Resolves the logged-in member from the `session` cookie and returns the
   public profile. Authentication status is conveyed by the HTTP code
   (200 / 401), not a payload field.
 
   The cookie's HMAC signature is verified before any query runs, so a
   tampered cookie is rejected without touching the database. A token whose
-  `udb_user_session` row is gone — logged out, or never issued — is a 401
+  `member_session` row is gone — logged out, or never issued — is a 401
   even when the signature still checks out, because the row is the source
   of truth.
 responses:
   200:
-    description: Current authenticated user
+    description: Current authenticated member
     content:
       application/json:
         schema:
@@ -38,7 +38,7 @@ responses:
             uuid:
               type: string
               format: uuid
-              description: Public identifier. Prefer this over `id` when exposing a user.
+              description: Public identifier. Prefer this over `id` when exposing a member.
               examples:
                 - "6486431a-3cac-4ba2-b32d-e67b673b8f76"
             name:

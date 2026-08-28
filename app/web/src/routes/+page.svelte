@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { ping } from '$lib/system';
-  import { fetchMe, signup, login, logout, type User } from '$lib/user';
+  import { fetchMe, signup, login, logout, type Member } from '$lib/member';
 
   let health = $state('...');
-  let me = $state<User | null>(null);
+  let me = $state<Member | null>(null);
   let error = $state('');
 
   let email = $state('');

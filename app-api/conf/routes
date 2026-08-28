@@ -5,8 +5,8 @@
 # Health check
 GET    /ping        controllers.ApplicationController.ping
 
-# User (email/password session auth)
-POST   /user/api/signup    controllers.auth.SignupController.invoke
-POST   /user/api/login     controllers.auth.LoginController.invoke
-POST   /user/api/logout    controllers.auth.LogoutController.invoke
-GET    /user/api/me        controllers.auth.GetMyProfileController.invoke
+# Member (email/password session auth)
+POST   /member/api/signup    controllers.auth.SignupController.invoke
+POST   /member/api/login     controllers.auth.LoginController.invoke
+POST   /member/api/logout    controllers.auth.LogoutController.invoke
+GET    /member/api/me        controllers.auth.GetMyProfileController.invoke

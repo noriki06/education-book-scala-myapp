@@ -22,15 +22,15 @@ paths:
   /ping:
     get:
       $ref: './paths/ping.yaml'
-  /user/api/signup:
+  /member/api/signup:
     post:
-      $ref: './paths/user-signup.yaml'
-  /user/api/login:
+      $ref: './paths/member-signup.yaml'
+  /member/api/login:
     post:
-      $ref: './paths/user-login.yaml'
-  /user/api/logout:
+      $ref: './paths/member-login.yaml'
+  /member/api/logout:
     post:
-      $ref: './paths/user-logout.yaml'
-  /user/api/me:
+      $ref: './paths/member-logout.yaml'
+  /member/api/me:
     get:
-      $ref: './paths/user-me.yaml'
+      $ref: './paths/member-me.yaml'
