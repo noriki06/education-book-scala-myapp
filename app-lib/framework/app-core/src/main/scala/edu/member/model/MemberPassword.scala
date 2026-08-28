@@ -5,32 +5,32 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.customer.model
+package edu.member.model
 
 import ixias.core.model.*
 import ixias.core.security.PBKDF2
 
 /**
- * 顧客パスワード
+ * 会員パスワード
  */
-import CustomerPassword.*
-case class CustomerPassword(
-  id:         Option[Id],          // 管理Id
-  customerId: Customer.Id,         // 顧客Id
-  hash:       String,              // PBKDF2ハッシュ文字列
-  updatedAt:  LocalDateTime = Now, // データ更新日
-  createdAt:  LocalDateTime = Now  // データ作成日
+import MemberPassword.*
+case class MemberPassword(
+  id:        Option[Id],          // 管理Id
+  memberId:  Member.Id,           // 会員Id
+  hash:      String,              // PBKDF2ハッシュ文字列
+  updatedAt: LocalDateTime = Now, // データ更新日
+  createdAt: LocalDateTime = Now  // データ作成日
 ) extends EntityModel[Id]
 
 /**
- * 顧客パスワード: 付随する型と処理の定義
+ * 会員パスワード: 付随する型と処理の定義
  */
-object CustomerPassword:
+object MemberPassword:
 
   // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
-  type WithNoId   = Entity.WithNoId[Id, CustomerPassword]
-  type EmbeddedId = Entity.EmbeddedId[Id, CustomerPassword]
+  type WithNoId   = Entity.WithNoId[Id, MemberPassword]
+  type EmbeddedId = Entity.EmbeddedId[Id, MemberPassword]
 
   // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]
@@ -39,18 +39,18 @@ object CustomerPassword:
   /**
    * 平文のパスワードを PBKDF2 でハッシュ化して新しい行を作る
    */
-  def hashed(customerId: Customer.Id, raw: String): WithNoId =
-    CustomerPassword(
-      id         = None,
-      customerId = customerId,
-      hash       = PBKDF2.hash(raw)
+  def hashed(memberId: Member.Id, raw: String): WithNoId =
+    MemberPassword(
+      id       = None,
+      memberId = memberId,
+      hash     = PBKDF2.hash(raw)
     ).toWithNoId
 
   // --[ Extensions ]--------------------------------------------------
   /**
-   * 顧客パスワード: 変数値だけで完結する処理
+   * 会員パスワード: 変数値だけで完結する処理
    */
-  extension (self: CustomerPassword)
+  extension (self: MemberPassword)
 
     /**
      * 平文のパスワードが保存済みハッシュと一致するか

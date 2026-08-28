@@ -17,14 +17,14 @@ import ixias.core.util.Log.*
 import play.api.libs.json.Json
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
-import model.customer.reads.JsValueSignup
-import edu.customer.model.{ Customer, CustomerPassword }
+import model.member.reads.JsValueSignup
+import edu.member.model.{ Member, MemberPassword }
 
 /**
- * Customer registration.  POST /user/api/signup  { email, password, name }
+ * Member registration.  POST /user/api/signup  { email, password, name }
  *
- * Validates input, ensures the email is unused, stores the profile ([[Customer]])
- * and its credential ([[CustomerPassword]], PBKDF2-hashed) separately, issues a
+ * Validates input, ensures the email is unused, stores the profile ([[Member]])
+ * and its credential ([[MemberPassword]], PBKDF2-hashed) separately, issues a
  * login session, and sets the session cookie.
  */
 class SignupController @Inject()(
@@ -45,23 +45,23 @@ class SignupController @Inject()(
       else Right((email, body.password, name))
     // Step-3: Reject a duplicate email.
     .flatMapF { case (email, password, name) =>
-      repos.customer.customer.findByEmail(email).map {
+      repos.member.member.findByEmail(email).map {
         case Some(_) => Left(Conflict("email already registered"))
         case None    => Right((email, password, name))
       }
     }
-    // Step-4: Create the user + credential + session, set the cookie.
+    // Step-4: Create the member + credential + session, set the cookie.
     .semiflatMap { case (email, password, name) =>
       for
-        customerId <- repos.customer.customer.add(Customer(
+        memberId <- repos.member.member.add(Member(
           id    = None,
-          uuid  = Customer.UUID.generate,
+          uuid  = Member.UUID.generate,
           email = email,
           name  = name,
         ).toWithNoId)
-        _      <- repos.customer.customerPassword.add(CustomerPassword.hashed(customerId, password))
-        result <- auth.open(customerId)(Created(Json.obj("id" -> customerId.value)))
+        _      <- repos.member.memberPassword.add(MemberPassword.hashed(memberId, password))
+        result <- auth.open(memberId)(Created(Json.obj("id" -> memberId.value)))
       yield
-        info(s"[AUTH] signup complete customerId=${customerId.value}")
+        info(s"[AUTH] signup complete memberId=${memberId.value}")
         result
     }

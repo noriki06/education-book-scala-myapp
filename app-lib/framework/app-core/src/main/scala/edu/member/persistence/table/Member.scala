@@ -5,21 +5,21 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.customer.persistence.table
+package edu.member.persistence.table
 
 import javax.inject.*
 import slick.jdbc.JdbcProfile
 import ixias.core.model.*
 import ixias.db.slick.{ SlickTable, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
-import edu.customer.model.Customer
+import edu.member.model.Member
 
 /**
- * Table Definition: Customer (`customer`)
+ * Table Definition: Member (`member`)
  */
 @Singleton
-class CustomerTable @Inject()(ctx: SlickDatabaseContext)
-  extends SlickTable[Customer.Id, Customer, JdbcProfile](ctx):
+class MemberTable @Inject()(ctx: SlickDatabaseContext)
+  extends SlickTable[Member.Id, Member, JdbcProfile](ctx):
   import api.*
 
   val ds = Map(
@@ -29,8 +29,8 @@ class CustomerTable @Inject()(ctx: SlickDatabaseContext)
 
   val query = TableQuery[Table]
 
-  case class Table(tag: Tag) extends BasicTable(tag, "customer"):
-    import Customer.*
+  case class Table(tag: Tag) extends BasicTable(tag, "member"):
+    import Member.*
 
     @pk  def id        = column[Id]            ("id",         O.UInt64, O.AutoInc, O.PrimaryKey)
     @col def uuid      = column[UUID]          ("uuid",       O.Varchar(64, Charset.Ascii))
@@ -48,6 +48,6 @@ class CustomerTable @Inject()(ctx: SlickDatabaseContext)
      * 1) Tuple(table) => Model
      * 2) Model        => Tuple(table)
      */
-    def * = deriveColumns.mapTo[Customer](
+    def * = deriveColumns.mapTo[Member](
       onWrite = _.copy(updatedAt = Now)
     )

@@ -5,15 +5,15 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.customer.model
+package edu.member.model
 
 import ixias.core.model.*
 
 /**
- * 顧客: 会員登録されたアカウント。プロフィールのみを持つ。
+ * 会員: 会員登録されたアカウント。プロフィールのみを持つ。
  */
-import Customer.*
-case class Customer(
+import Member.*
+case class Member(
   id:        Option[Id],                        // 管理Id
   uuid:      UUID,                              // UUID
   email:     String,                            // ログインId (メールアドレス)
@@ -24,15 +24,15 @@ case class Customer(
 ) extends EntityModel[Id]
 
 /**
- * 顧客: 付随する型と処理の定義
+ * 会員: 付随する型と処理の定義
  */
-object Customer:
+object Member:
 
   // --[ Type Aliases ]------------------------------------------------
   type Id         = Id.Repr
   type UUID       = UUID.Repr
-  type WithNoId   = Entity.WithNoId[Id, Customer]
-  type EmbeddedId = Entity.EmbeddedId[Id, Customer]
+  type WithNoId   = Entity.WithNoId[Id, Member]
+  type EmbeddedId = Entity.EmbeddedId[Id, Member]
 
   // --[ Opaque Values ]-----------------------------------------------
   object Id extends Entity.Id[Long]

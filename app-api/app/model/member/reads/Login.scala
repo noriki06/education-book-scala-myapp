@@ -5,12 +5,12 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package model.customer.reads
+package model.member.reads
 
 import io.circe.Decoder
 import io.circe.generic.semiauto.*
 
-/** Request body for user login. */
+/** Request body for member login. */
 case class JsValueLogin(
   email:    String,
   password: String,

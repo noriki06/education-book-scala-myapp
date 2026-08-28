@@ -5,12 +5,12 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package model.customer.reads
+package model.member.reads
 
 import io.circe.Decoder
 import io.circe.generic.semiauto.*
 
-/** Request body for user signup. */
+/** Request body for member signup. */
 case class JsValueSignup(
   email:    String,
   password: String,

@@ -5,31 +5,30 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.customer.persistence
+package edu.member.persistence
 
 import javax.inject.*
 import scala.concurrent.Future
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 
-import edu.customer.model.Customer
-import edu.customer.persistence.table.CustomerPasswordTable
+import edu.member.persistence.table.MemberTable
 
 /**
- * Repository for CustomerPassword persistence (credentials).
+ * Repository for Member persistence.
  */
 @Singleton
-class CustomerPasswordRepository @Inject()(
-  table: CustomerPasswordTable,
+class MemberRepository @Inject()(
+  table: MemberTable,
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
   import api.*
 
   /**
-   * Resolve a user's credential by user id (used at login).
+   * Resolve a member by login email (used by signup/login).
    */
-  def findByUserId(customerId: Customer.Id): Future[Option[EntityEmbeddedId]] =
+  def findByEmail(email: String): Future[Option[EntityEmbeddedId]] =
     RunDBAction(HostSpec.REPLICA): slick =>
       slick
-        .filter(_.customerId === customerId)
+        .filter(_.email === email)
         .result.headOption

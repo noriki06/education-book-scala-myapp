@@ -19,21 +19,21 @@ import ixias.web.play.session.TokenManagerViaCookie
 import ixias.web.play.session.AuthProfile as IxiasAuthProfile
 
 import mvc.AppRepositoryFacade
-import edu.customer.model.{ Customer, CustomerSession }
+import edu.member.model.{ Member, MemberSession }
 
 /**
  * Session authentication for the email/password login flow.
  *
  * Implements ixias's [[ixias.web.play.session.AuthProfile]] on top of
  * [[ixias.web.play.session.TokenManagerViaCookie]]: the cookie carries a
- * *signed* token (`{signature}-{nonce}-{token}`), while `customer_session`
+ * *signed* token (`{signature}-{nonce}-{token}`), while `member_session`
  * stores the raw [[Token]]. A tampered cookie fails the HMAC check before any
  * query runs, and logout revokes the session server-side by deleting the row —
  * so the database stays the single source of truth.
  *
  * The three controllers use it like this:
  * {{{
- *   SignupController / LoginController  auth.open(customerId)(result)      // 発行 + Cookie 付与
+ *   SignupController / LoginController  auth.open(memberId)(result)      // 発行 + Cookie 付与
  *   GetMyProfileController              auth.resolveUser(request)   // 検証 + ユーザー解決
  *   LogoutController                    auth.close(request)(result) // 失効 + Cookie 破棄
  * }}}
@@ -49,7 +49,7 @@ import edu.customer.model.{ Customer, CustomerSession }
 class AuthProfile @Inject()(
   repos:  AppRepositoryFacade,
   signer: Signer,
-) extends IxiasAuthProfile[Customer.EmbeddedId]:
+) extends IxiasAuthProfile[Member.EmbeddedId]:
 
   private given Signer = signer
 
@@ -57,34 +57,34 @@ class AuthProfile @Inject()(
   private val tokenManager = TokenManagerViaCookie("session")
 
   /**
-   * Resolves the logged-in user from the request cookie.
+   * Resolves the logged-in member from the request cookie.
    *
    * Three ways to fail, all 401: no cookie / bad signature (both reported by
    * `extract`), the session row is gone (logged out or never existed), or the
-   * user behind the session no longer exists.
+   * member behind the session no longer exists.
    */
   override def resolveUser(request: RequestHeader)
-    (using ExecutionContext): Future[Either[Result, Customer.EmbeddedId]] =
+    (using ExecutionContext): Future[Either[Result, Member.EmbeddedId]] =
     tokenManager.extract(request) match
       case Left(rejected) => Future.successful(Left(rejected))
       case Right(token)   =>
-        repos.customer.customerSession.findByToken(token).flatMap {
+        repos.member.memberSession.findByToken(token).flatMap {
           case None          => Future.successful(Left(Unauthorized("The session is no longer valid")))
           case Some(session) =>
-            repos.customer.customer.find(session.v.customerId).map {
-              case None       => Left(Unauthorized("The session owner no longer exists"))
-              case Some(user) => Right(user)
+            repos.member.member.find(session.v.memberId).map {
+              case None         => Left(Unauthorized("The session owner no longer exists"))
+              case Some(member) => Right(member)
             }
         }
 
   /**
-   * Opens a session for `customerId`: stores a fresh token and attaches the signed
+   * Opens a session for `memberId`: stores a fresh token and attaches the signed
    * cookie to `result`. Called after signup and after a successful login.
    */
-  def open(customerId: Customer.Id)(result: Result)(using ExecutionContext): Future[Result] =
+  def open(memberId: Member.Id)(result: Result)(using ExecutionContext): Future[Result] =
     val token = Token.generate
-    repos.customer.customerSession
-      .add(CustomerSession(id = None, customerId = customerId, token = token).toWithNoId)
+    repos.member.memberSession
+      .add(MemberSession(id = None, memberId = memberId, token = token).toWithNoId)
       .map(_ => tokenManager.put(token)(result))
 
   /**
@@ -94,6 +94,6 @@ class AuthProfile @Inject()(
    */
   def close(request: RequestHeader)(result: Result)(using ExecutionContext): Future[Result] =
     val revoked = tokenManager.extract(request) match
-      case Right(token) => repos.customer.customerSession.deleteByToken(token).map(_ => ())
+      case Right(token) => repos.member.memberSession.deleteByToken(token).map(_ => ())
       case Left(_)      => Future.unit
     revoked.map(_ => tokenManager.discard(result))

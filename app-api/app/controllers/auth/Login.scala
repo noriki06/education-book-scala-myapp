@@ -17,13 +17,13 @@ import ixias.core.util.Log.*
 import play.api.libs.json.Json
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
-import model.customer.reads.JsValueLogin
+import model.member.reads.JsValueLogin
 
 /**
- * Customer login.  POST /user/api/login  { email, password }
+ * Member login.  POST /user/api/login  { email, password }
  *
- * Looks up the user by email, verifies the password against the stored
- * PBKDF2 hash ([[edu.customer.model.CustomerPassword]]), issues a login session,
+ * Looks up the member by email, verifies the password against the stored
+ * PBKDF2 hash ([[edu.member.model.MemberPassword]]), issues a login session,
  * and sets the session cookie.
  */
 class LoginController @Inject()(
@@ -34,22 +34,22 @@ class LoginController @Inject()(
     // Step-1: Parse the JSON body.
     EitherT.fromEither[Future]:
       request.decode[JsValueLogin]
-    // Step-2: Look up the user and verify the password.
+    // Step-2: Look up the member and verify the password.
     .flatMapF { body =>
-      repos.customer.customer.findByEmail(body.email.trim.toLowerCase).flatMap {
+      repos.member.member.findByEmail(body.email.trim.toLowerCase).flatMap {
         case None =>
           Future.successful(Left(Unauthorized("invalid email or password")))
-        case Some(user) =>
-          repos.customer.customerPassword.findByUserId(user.id).map {
-            case Some(pw) if pw.v.verify(body.password) => Right(user)
+        case Some(member) =>
+          repos.member.memberPassword.findByMemberId(member.id).map {
+            case Some(pw) if pw.v.verify(body.password) => Right(member)
             case _ => Left(Unauthorized("invalid email or password"))
           }
       }
     }
     // Step-3: Issue a session and set the cookie.
-    .semiflatMap { user =>
-      auth.open(user.id)(Ok(Json.obj("id" -> user.id.value))).map { result =>
-        info(s"[AUTH] login customerId=${user.id.value}")
+    .semiflatMap { member =>
+      auth.open(member.id)(Ok(Json.obj("id" -> member.id.value))).map { result =>
+        info(s"[AUTH] login memberId=${member.id.value}")
         result
       }
     }

@@ -5,21 +5,21 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package edu.customer.persistence
+package edu.member.persistence
 
 import javax.inject.*
 import scala.concurrent.Future
 import ixias.core.model.value.Token
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 
-import edu.customer.persistence.table.CustomerSessionTable
+import edu.member.persistence.table.MemberSessionTable
 
 /**
- * Repository for CustomerSession persistence (server-side login sessions).
+ * Repository for MemberSession persistence (server-side login sessions).
  */
 @Singleton
-class CustomerSessionRepository @Inject()(
-  table: CustomerSessionTable,
+class MemberSessionRepository @Inject()(
+  table: MemberSessionTable,
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
   import api.*
