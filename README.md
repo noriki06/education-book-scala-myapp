@@ -114,30 +114,35 @@ $ docker compose ps        # mysql が healthy であることを確認
 ```
 
 初回起動時に `etc/docker/mysql/data/init.sql` が実行され、
-`app` データベースとユーザー（`app` / `pass`）が作成されます。ポートは **13306** です。
+`myapp` データベースとユーザー（`myapp` / `pass`）が作成されます。ポートは **13307** です。
+
+> 教材の雛形リポジトリ（`education-book-scala-app`）は `app` を **13306** で公開します。
+> こちらを **13307 / `myapp`** にしてあるのは、両方を同時に起動できるようにするためと、
+> 接続先を間違えたときに「そんなデータベースは無い」で止めるためです
+> （ポートだけ変えると、間違えた先にも `app` があるので黙って繋がってしまう）。
 
 ### コマンドラインで DB に接続する
 
-ホストの MySQL クライアントから、公開ポート **13306** へ接続します。
+ホストの MySQL クライアントから、公開ポート **13307** へ接続します。
 
 ```bash
 $ brew install mysql-client          # 未インストールの場合
-$ mysql -h 127.0.0.1 -P 13306 -uapp -p app
+$ mysql -h 127.0.0.1 -P 13307 -umyapp -p myapp
 mysql> SHOW TABLES;
-mysql> SELECT * FROM udb_user\G
+mysql> SELECT * FROM member\G
 ```
 
 ワンライナーで叩くこともできます。
 
 ```bash
-$ mysql -h 127.0.0.1 -P 13306 -uapp -p app -e "SHOW TABLES;"
+$ mysql -h 127.0.0.1 -P 13307 -umyapp -p myapp -e "SHOW TABLES;"
 ```
 
 | 項目 | 値 |
 |---|---|
-| ホスト / ポート | `127.0.0.1` / `13306` |
-| データベース | `app` |
-| ユーザー / パスワード | `app` / `pass` |
+| ホスト / ポート | `127.0.0.1` / `13307` |
+| データベース | `myapp` |
+| ユーザー / パスワード | `myapp` / `pass` |
 | root パスワード | `pass` |
 
 > `brew install mysql-client` は PATH に入らないことがあります。その場合は
@@ -267,7 +272,7 @@ $ sbt
 sbt:education-book-app-api> migrateAll
 ```
 
-`etc/database/migration/<db>/common/*.sql` を適用します（`udb_user` などが作られます）。
+`etc/database/migration/<db>/common/*.sql` を適用します（`member` などが作られます）。
 
 ## 3. app-api（Play）を起動
 
@@ -332,9 +337,9 @@ API の型はすべて `etc/openapi` の仕様から生成されます（`app/pa
 | 認証 | `app-api/app/mvc/auth/AuthProfile.scala`（ixias `TokenManagerViaCookie`） |
 | コントローラー | `app-api/app/controllers/auth/`（クラス名は `XxxController`） |
 | ルート | `app-api/conf/routes` |
-| API 契約 | `etc/openapi/paths/user-*.yaml` |
-| フロント | `app/web/src/lib/user.ts` |
+| API 契約 | `etc/openapi/paths/member-*.yaml` |
+| フロント | `app/web/src/lib/member.ts` |
 
 Cookie は HMAC 署名付きで、値は `{署名}-{nonce}-{トークン}`。
-DB (`udb_user_session.token`) には未署名のトークンだけを保存し、リクエストごとに
+DB (`member_session.token`) には未署名のトークンだけを保存し、リクエストごとに
 署名を検証してから DB と突き合わせます。ログアウトは DB 行を削除するため即時失効します。
