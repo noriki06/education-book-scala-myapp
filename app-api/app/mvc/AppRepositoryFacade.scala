@@ -18,4 +18,5 @@ import javax.inject.{ Inject, Singleton }
 class AppRepositoryFacade @Inject() (
   val member: edu.member.persistence.RepositoryFacade,
   val event:  edu.event.persistence.RepositoryFacade,
+  val place:  edu.place.persistence.RepositoryFacade,
 )
