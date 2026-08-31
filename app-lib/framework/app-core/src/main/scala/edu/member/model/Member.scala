@@ -18,6 +18,7 @@ case class Member(
   uuid:      UUID,                              // UUID
   email:     String,                            // ログインId (メールアドレス)
   name:      String,                            // 表示名
+  nameKana:  String,                            // 表示名の読み (名簿の並び順に使う)
   state:     Status        = Status.IS_ACTIVE,  // アカウント状態
   updatedAt: LocalDateTime = Now,               // データ更新日
   createdAt: LocalDateTime = Now                // データ作成日

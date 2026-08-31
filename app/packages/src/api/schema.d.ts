@@ -84,6 +84,11 @@ export interface paths {
                          * @example 山田 太郎
                          */
                         name: string;
+                        /**
+                         * @description Reading of the display name, full-width katakana only (the confirmed roster sorts by it). Anything else → 400.
+                         * @example ヤマダタロウ
+                         */
+                        nameKana: string;
                     };
                 };
             };

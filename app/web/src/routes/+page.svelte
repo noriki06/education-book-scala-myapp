@@ -10,6 +10,7 @@
   let email = $state('');
   let password = $state('');
   let name = $state('');
+  let nameKana = $state('');
 
   async function refresh() {
     me = await fetchMe();
@@ -18,7 +19,7 @@
   async function onSignup(event: SubmitEvent) {
     event.preventDefault();
     error = '';
-    const result = await signup(email, password, name);
+    const result = await signup(email, password, name, nameKana);
     if (!result.ok) return (error = result.error);
     await refresh();
   }
@@ -56,6 +57,7 @@
   <h2>新規登録</h2>
   <form onsubmit={onSignup}>
     <input placeholder="name" bind:value={name} />
+    <input placeholder="name kana（全角カタカナ）" bind:value={nameKana} />
     <input placeholder="email" type="email" bind:value={email} />
     <input placeholder="password (8文字以上)" type="password" bind:value={password} />
     <button type="submit">登録</button>

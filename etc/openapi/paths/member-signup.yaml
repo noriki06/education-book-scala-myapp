@@ -26,6 +26,7 @@ requestBody:
           - email
           - password
           - name
+          - nameKana
         properties:
           email:
             type: string
@@ -44,6 +45,14 @@ requestBody:
             description: Display name. Empty → 400.
             examples:
               - "山田 太郎"
+          nameKana:
+            type: string
+            pattern: "^[ァ-ヶー]+$"
+            description: >-
+              Reading of the display name, full-width katakana only (the
+              confirmed roster sorts by it). Anything else → 400.
+            examples:
+              - "ヤマダタロウ"
 responses:
   201:
     description: Registered, session cookie set

@@ -33,10 +33,15 @@ export async function fetchMe(): Promise<Member | null> {
  * Register and sign in in one step — the backend issues the session cookie as
  * part of the signup response, so no follow-up login is needed.
  */
-export async function signup(email: string, password: string, name: string): Promise<AuthResult> {
+export async function signup(
+  email: string,
+  password: string,
+  name: string,
+  nameKana: string,
+): Promise<AuthResult> {
   return requestVoid(
     api.POST('/member/api/signup', {
-      body:        { email, password, name },
+      body:        { email, password, name, nameKana },
       credentials: 'include',
     }),
     '登録に失敗しました',

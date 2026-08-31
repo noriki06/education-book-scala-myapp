@@ -15,6 +15,7 @@ case class JsValueSignup(
   email:    String,
   password: String,
   name:     String,
+  nameKana: String,
 )
 
 object JsValueSignup:
