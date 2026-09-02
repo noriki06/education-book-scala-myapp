@@ -47,10 +47,16 @@ object Event:
 
   /**
    * 公開用の識別子。ログイン不要で詳細が見える唯一の入場鍵なので、
-   * 一意かつ推測できない値にする（連番を URL に晒さない）
+   * 一意かつ推測できない値にする（連番を URL に晒さない）。
+   * 128bit を URL-safe な 22 文字に符号化する（03_design.md の入力値の範囲）
    */
   object Code extends Entity.Id[String]:
-    def generate: Code = Code(java.util.UUID.randomUUID.toString)
+    private val random = new java.security.SecureRandom
+
+    def generate: Code =
+      val bytes = new Array[Byte](16)
+      random.nextBytes(bytes)
+      Code(java.util.Base64.getUrlEncoder.withoutPadding.encodeToString(bytes))
 
   // --[ Value Objects ]-----------------------------------------------
   /**
