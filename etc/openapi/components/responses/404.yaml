@@ -1,0 +1,16 @@
+#
+# Copyright IxiaS, Inc. All Rights Reserved.
+#
+# For the full copyright and license information,
+# please view the LICENSE file that was distributed with this source code.
+#
+
+description: >-
+  指定されたものが見つからない。存在しない識別子と、削除済みの識別子は
+  同じ答えを返す（区別すると存在の有無が漏れる）。
+content:
+  text/plain:
+    schema:
+      type: string
+      examples:
+        - "no such place"

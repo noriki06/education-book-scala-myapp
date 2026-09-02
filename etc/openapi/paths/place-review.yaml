@@ -1,0 +1,77 @@
+#
+# Copyright IxiaS, Inc. All Rights Reserved.
+#
+# For the full copyright and license information,
+# please view the LICENSE file that was distributed with this source code.
+#
+
+summary: Review a place
+description: >-
+  Writes a star and, if there is anything to add, a line about the place.
+
+  A review is written afresh every visit, so posting twice about the same
+  place is two reviews rather than an overwrite — `createdAt` is what says
+  when each visit happened.
+
+  Reviews carry the writer's name. This is the one place in the application
+  where a member is deliberately not anonymous: a colleague's "I like this
+  one" is the reason the reviews exist at all.
+
+  Who is writing comes from the `session` cookie and is never part of the
+  body.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - placeUuid
+          - star
+        properties:
+          placeUuid:
+            type: string
+            description: >-
+              The place being reviewed, named by the identifier in its URL.
+              Unknown → 404.
+            examples:
+              - "6a0b6598-d3be-48ef-8871-2850d29dc300"
+          star:
+            type: integer
+            minimum: 1
+            maximum: 5
+            description: Outside 1..5 → 400.
+            examples:
+              - 4
+          comment:
+            type: [string, "null"]
+            maxLength: 200
+            description: >-
+              A single line, at most 200 characters. Omit it and the star
+              stands on its own.
+            examples:
+              - "11:45 なら並ばず入れた。味玉推し"
+responses:
+  201:
+    description: Written
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Management ID of the review, used to edit or delete it.
+              examples:
+                - 1
+  400:
+    $ref: '../components/responses/400.yaml'
+  401:
+    $ref: '../components/responses/401.yaml'
+  404:
+    $ref: '../components/responses/404.yaml'
+  500:
+    $ref: '../components/responses/500.yaml'

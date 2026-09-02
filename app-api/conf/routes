@@ -13,3 +13,6 @@ GET    /member/api/me        controllers.auth.GetMyProfileController.invoke
 
 # Event (proposing, joining)
 POST   /event/api/create     controllers.event.EventCreateController.invoke
+
+# Place (reviewing, registering)
+POST   /place/api/review     controllers.place.PlaceReviewController.invoke

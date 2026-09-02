@@ -37,3 +37,6 @@ paths:
   /event/api/create:
     post:
       $ref: './paths/event-create.yaml'
+  /place/api/review:
+    post:
+      $ref: './paths/place-review.yaml'
