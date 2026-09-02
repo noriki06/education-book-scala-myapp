@@ -12,6 +12,7 @@ import scala.concurrent.Future
 import ixias.db.slick.{ SlickBaseRepository, SlickDatabaseContext }
 import ixias.core.persistence.HostSpec
 
+import edu.place.model.Place
 import edu.place.persistence.table.PlaceTable
 
 /**
@@ -23,6 +24,16 @@ class PlaceRepository @Inject()(
   ctx:   SlickDatabaseContext
 ) extends SlickBaseRepository(table, ctx):
   import api.*
+
+  /**
+   * Resolve a place by the identifier in its URL. This is how the detail page
+   * finds it — the numeric id never leaves the server.
+   */
+  def findByUuid(uuid: Place.UUID): Future[Option[EntityEmbeddedId]] =
+    RunDBAction(HostSpec.REPLICA): slick =>
+      slick
+        .filter(_.uuid === uuid)
+        .result.headOption
 
   /**
    * Resolve a place by the Google reference it was registered from. Used to

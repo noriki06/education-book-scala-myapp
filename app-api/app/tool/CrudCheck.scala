@@ -113,15 +113,19 @@ object CrudCheck:
     check("eventEntry.find",  true, await(eventEntries.find(eventId, memberId)).isDefined)
 
     // --[ Place ]-------------------------------------------------------
+    val placeUuid = Place.UUID.generate
     val placeId = await(places.add(Place(
       id            = None,
+      uuid          = placeUuid,
       googlePlaceId = Some("ChIJcrudcheck"),
       name          = "疎通食堂",
     ).toWithNoId))
     val place = await(places.find(placeId)).get
     check("place.name",          "疎通食堂",              place.v.name)
+    check("place.uuid",          placeUuid,             place.v.uuid)
     check("place.googlePlaceId", Some("ChIJcrudcheck"),  place.v.googlePlaceId)
     check("place.findByPrefix",  true, await(places.findByNamePrefix("疎通")).nonEmpty)
+    check("place.findByUuid",    Some(placeId), await(places.findByUuid(placeUuid)).map(_.id))
 
     // --[ PlaceReview ]-------------------------------------------------
     val reviewId = await(placeReviews.add(PlaceReview(
