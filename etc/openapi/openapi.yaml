@@ -34,3 +34,6 @@ paths:
   /member/api/me:
     get:
       $ref: './paths/member-me.yaml'
+  /event/api/create:
+    post:
+      $ref: './paths/event-create.yaml'

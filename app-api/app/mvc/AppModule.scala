@@ -7,6 +7,7 @@
 
 package mvc
 
+import java.time.Clock
 import javax.inject.{ Inject, Singleton }
 import com.google.inject.AbstractModule
 import scala.concurrent.ExecutionContext
@@ -40,3 +41,9 @@ class AppModule extends AbstractModule:
       .to(classOf[AppDatabaseContext])
     bind(classOf[Signer])
       .toInstance(MacSigner.fromSecretKey("secret-hash", "HmacSHA256"))
+    // Controllers take the current time from here rather than calling
+    // `LocalDateTime.now()`, so a test can freeze it. Every deadline rule in
+    // this application turns on "is it that instant yet", and those are the
+    // cases worth pinning down.
+    bind(classOf[Clock])
+      .toInstance(Clock.systemDefaultZone)

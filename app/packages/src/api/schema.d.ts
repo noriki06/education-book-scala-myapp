@@ -293,6 +293,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/event/api/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Propose an event
+         * @description Publishes an event and, in the same request, records the proposer as its first entry — the count that decides confirmation includes them.
+         *     Who is proposing comes from the `session` cookie and is never part of the body. The proposer stays anonymous: nothing in any response reveals them, and after confirmation they appear only as one name among the participants.
+         *     The response carries the `code` alone. That is the event's whole address — what the bot posts to Slack, and all a visitor needs — while the numeric id stays server-side.
+         *     Times are JST and carry no offset.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description What the event is. A single line — where to meet is written in here too, since an event holds no place of its own.
+                         * @example 今日ランチ行きたい
+                         */
+                        title: string;
+                        /**
+                         * @description When to meet, JST without an offset. Must be in the future and within a year.
+                         * @example 2026-09-03T12:00
+                         */
+                        startAt: string;
+                        /**
+                         * @description When to stop judging confirmation. Omit it and the meeting time is used. Must satisfy now < closeAt <= startAt.
+                         * @example 2026-09-03T11:00
+                         */
+                        closeAt?: string | null;
+                        /**
+                         * @description How many it takes, the proposer included.
+                         * @example 4
+                         */
+                        minEntries: number;
+                        /**
+                         * @description Where the bot announces it.
+                         * @example C0LUNCH
+                         */
+                        slackChannelId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Published */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Public identifier, used as the event's URL.
+                             * @example xxd6Y46QH4OpL_CeMWP7_A
+                             */
+                            code: string;
+                        };
+                    };
+                };
+                400: components["responses"]["400"];
+                401: components["responses"]["401"];
+                500: components["responses"]["500"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

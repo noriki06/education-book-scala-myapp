@@ -1,0 +1,90 @@
+#
+# Copyright IxiaS, Inc. All Rights Reserved.
+#
+# For the full copyright and license information,
+# please view the LICENSE file that was distributed with this source code.
+#
+
+summary: Propose an event
+description: >-
+  Publishes an event and, in the same request, records the proposer as its
+  first entry — the count that decides confirmation includes them.
+
+  Who is proposing comes from the `session` cookie and is never part of the
+  body. The proposer stays anonymous: nothing in any response reveals them,
+  and after confirmation they appear only as one name among the participants.
+
+  The response carries the `code` alone. That is the event's whole address —
+  what the bot posts to Slack, and all a visitor needs — while the numeric id
+  stays server-side.
+
+  Times are JST and carry no offset.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - title
+          - startAt
+          - minEntries
+          - slackChannelId
+        properties:
+          title:
+            type: string
+            minLength: 1
+            maxLength: 60
+            description: >-
+              What the event is. A single line — where to meet is written in
+              here too, since an event holds no place of its own.
+            examples:
+              - "今日ランチ行きたい"
+          startAt:
+            type: string
+            description: >-
+              When to meet, JST without an offset. Must be in the future and
+              within a year.
+            examples:
+              - "2026-09-03T12:00"
+          closeAt:
+            type: [string, "null"]
+            description: >-
+              When to stop judging confirmation. Omit it and the meeting time
+              is used. Must satisfy now < closeAt <= startAt.
+            examples:
+              - "2026-09-03T11:00"
+          minEntries:
+            type: integer
+            minimum: 2
+            maximum: 50
+            description: How many it takes, the proposer included.
+            examples:
+              - 4
+          slackChannelId:
+            type: string
+            maxLength: 64
+            description: Where the bot announces it.
+            examples:
+              - "C0LUNCH"
+responses:
+  201:
+    description: Published
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              type: string
+              description: Public identifier, used as the event's URL.
+              examples:
+                - "xxd6Y46QH4OpL_CeMWP7_A"
+  400:
+    $ref: '../components/responses/400.yaml'
+  401:
+    $ref: '../components/responses/401.yaml'
+  500:
+    $ref: '../components/responses/500.yaml'

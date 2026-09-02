@@ -10,3 +10,6 @@ POST   /member/api/signup    controllers.auth.SignupController.invoke
 POST   /member/api/login     controllers.auth.LoginController.invoke
 POST   /member/api/logout    controllers.auth.LogoutController.invoke
 GET    /member/api/me        controllers.auth.GetMyProfileController.invoke
+
+# Event (proposing, joining)
+POST   /event/api/create     controllers.event.CreateController.invoke
