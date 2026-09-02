@@ -12,4 +12,4 @@ POST   /member/api/logout    controllers.auth.LogoutController.invoke
 GET    /member/api/me        controllers.auth.GetMyProfileController.invoke
 
 # Event (proposing, joining)
-POST   /event/api/create     controllers.event.CreateController.invoke
+POST   /event/api/create     controllers.event.EventCreateController.invoke

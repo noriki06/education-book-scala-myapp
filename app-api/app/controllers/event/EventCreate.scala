@@ -9,7 +9,6 @@ package controllers.event
 
 import java.time.Clock
 import javax.inject.Inject
-import scala.util.Try
 import scala.language.implicitConversions
 import scala.concurrent.Future
 
@@ -20,7 +19,7 @@ import ixias.core.util.Log.*
 import play.api.libs.json.Json
 
 import mvc.{ AppControllerComponents, BaseAbstractController }
-import model.event.reads.JsValueCreate
+import model.event.reads.JsValueEventCreate
 import edu.member.model.Member
 // `Event` alone would resolve to the event-stream helper BaseController
 // inherits, which wins over an import, so the model is brought in renamed.
@@ -37,7 +36,7 @@ import edu.event.model.{ Event as EventModel, EventEntry }
  * what the bot posts to Slack, and the one thing a visitor needs — while the
  * numeric id stays inside.
  */
-class CreateController @Inject()(
+class EventCreateController @Inject()(
   cc:    AppControllerComponents,
   clock: Clock,
 ) extends BaseAbstractController(cc):
@@ -50,7 +49,7 @@ class CreateController @Inject()(
     // Step-2: Parse the JSON body.
     .flatMap: member =>
       EitherT
-        .fromEither[Future](request.decode[JsValueCreate])
+        .fromEither[Future](request.decode[JsValueEventCreate])
         .map(member.id -> _)
     // Step-3: Validate, turning the raw strings into the values Event holds.
     .subflatMap { case (memberId, body) => validated(memberId, body) }
@@ -75,7 +74,7 @@ class CreateController @Inject()(
    * `close_at <= start_at`); repeating them here is what turns a constraint
    * violation into a sentence the caller can act on.
    */
-  private def validated(memberId: Member.Id, body: JsValueCreate): Either[Result, EventModel] =
+  private def validated(memberId: Member.Id, body: JsValueEventCreate): Either[Result, EventModel] =
     val now = LocalDateTime.now(clock)
     for
       title      <- asTitle(body.title)
@@ -106,7 +105,7 @@ class CreateController @Inject()(
 
   /** JST, no offset — the format `2026-09-02T12:00` is the only one accepted. */
   private def asTimestamp(field: String, raw: String): Either[Result, LocalDateTime] =
-    Try(LocalDateTime.parse(raw.trim)).toEither.left.map: _ =>
+    Either.catchNonFatal(LocalDateTime.parse(raw.trim)).leftMap: _ =>
       BadRequest(s"$field must read like 2026-09-02T12:00 (JST, without an offset)")
 
   /** 1..60 characters on a single line. The place, if any, is written in here. */

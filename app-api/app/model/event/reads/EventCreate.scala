@@ -21,7 +21,7 @@ import io.circe.generic.semiauto.*
  * `closeAt` may be omitted — the default deadline is the meeting time itself.
  * Who is proposing is never part of the body; it comes from the session.
  */
-case class JsValueCreate(
+case class JsValueEventCreate(
   title:          String,
   startAt:        String,
   closeAt:        Option[String],
@@ -29,5 +29,5 @@ case class JsValueCreate(
   slackChannelId: String,
 )
 
-object JsValueCreate:
-  given Decoder[JsValueCreate] = deriveDecoder
+object JsValueEventCreate:
+  given Decoder[JsValueEventCreate] = deriveDecoder
